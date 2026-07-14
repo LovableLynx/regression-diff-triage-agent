@@ -1,0 +1,4621 @@
+{
+  "collection": {
+    "item": [
+      {
+        "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+        "name": "Login - valid credentials",
+        "request": {
+          "url": {
+            "path": [
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+              ],
+              "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+        "name": "Get Books - list",
+        "request": {
+          "url": {
+            "path": [
+              "books"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                "pm.test('Each book has a price field', function () {",
+                "  const books = pm.response.json();",
+                "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                "});"
+              ],
+              "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+        "name": "Get Book 1 - detail",
+        "request": {
+          "url": {
+            "path": [
+              "books",
+              "1"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+            }
+          }
+        ]
+      },
+      {
+        "id": "bef4fe60-9097-4611-a760-457376f41683",
+        "name": "Get Book 2 - detail",
+        "request": {
+          "url": {
+            "path": [
+              "books",
+              "2"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+            }
+          }
+        ]
+      },
+      {
+        "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+        "name": "Get Book 1 - availability",
+        "request": {
+          "url": {
+            "path": [
+              "books",
+              "1",
+              "availability"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+            }
+          }
+        ]
+      },
+      {
+        "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+        "name": "Get Book 3 - availability (expected out of stock)",
+        "request": {
+          "url": {
+            "path": [
+              "books",
+              "3",
+              "availability"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                "pm.test('Book 3 is correctly reported out of stock', function () {",
+                "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                "});"
+              ],
+              "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+            }
+          }
+        ]
+      },
+      {
+        "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+        "name": "Get Author 1",
+        "request": {
+          "url": {
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+            }
+          }
+        ]
+      },
+      {
+        "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+        "name": "Get Author 1",
+        "request": {
+          "url": {
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+            }
+          }
+        ]
+      },
+      {
+        "id": "6bed2a96-9695-477b-b82e-95484207d612",
+        "name": "Get Author 1",
+        "request": {
+          "url": {
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+              ],
+              "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [],
+    "info": {
+      "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+      "name": "Bookstore Regression Suite",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    }
+  },
+  "environment": {
+    "id": "bookstore-env",
+    "name": "Bookstore Local",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:3000",
+        "key": "baseUrl"
+      }
+    ]
+  },
+  "globals": {
+    "id": "549e39b4-2d0c-452a-a833-967fd644963e",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 12,
+        "pending": 0,
+        "failed": 6
+      },
+      "testScripts": {
+        "total": 9,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 8.11111111111111,
+      "responseMin": 3,
+      "responseMax": 24,
+      "responseSd": 6.723829009069896,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1784025369014,
+      "completed": 1784025369279
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 9,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "512748b5-ad74-4490-8310-82f51c5e7b53",
+          "httpRequestId": "4ae6f011-6882-4837-bce5-e69201d75891"
+        },
+        "item": {
+          "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+          "name": "Login - valid credentials",
+          "request": {
+            "url": {
+              "path": [
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                ],
+                "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "0e81dfb8-8ca2-4dff-8ef2-aafbc282f1b5",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "40",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+          }
+        },
+        "response": {
+          "id": "fb5991e1-16fd-438b-8869-0503e2f4a699",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "31"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"1f-mRYQ6Yx/raK/ssDeWseqQCiH0yM\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              73,
+              110,
+              118,
+              97,
+              108,
+              105,
+              100,
+              32,
+              99,
+              114,
+              101,
+              100,
+              101,
+              110,
+              116,
+              105,
+              97,
+              108,
+              115,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 24,
+          "responseSize": 31
+        },
+        "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status is 200",
+              "message": "expected 401 to deeply equal 200",
+              "stack": "AssertionError: expected 401 to deeply equal 200\n   at Object.eval sandbox-script.js:1:1)"
+            }
+          },
+          {
+            "assertion": "Returns a token",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 1,
+              "test": "Returns a token",
+              "message": "expected { error: 'Invalid credentials' } to have property 'token'",
+              "stack": "AssertionError: expected { error: 'Invalid credentials' } to have property 'token'\n   at Object.eval sandbox-script.js:2:1)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "cd560eb7-1289-46b9-97dc-f58d85c346fa",
+          "length": 9,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "a70cf236-5094-4afe-939d-780069cc938a"
+        },
+        "item": {
+          "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+          "name": "Get Books - list",
+          "request": {
+            "url": {
+              "path": [
+                "books"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Each book has a price field', function () {",
+                  "  const books = pm.response.json();",
+                  "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                  "});"
+                ],
+                "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "books"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d5c219a5-d3e3-4ba2-a52f-6e1aca29cd77",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "7c7adfb9-010a-439b-b64e-1b6032baf91b",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "184"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"b8-JuWP7zIu9NbNFh87BS2MSJe0J1Y\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              84,
+              104,
+              101,
+              32,
+              80,
+              114,
+              97,
+              103,
+              109,
+              97,
+              116,
+              105,
+              99,
+              32,
+              80,
+              114,
+              111,
+              103,
+              114,
+              97,
+              109,
+              109,
+              101,
+              114,
+              34,
+              44,
+              34,
+              99,
+              111,
+              115,
+              116,
+              34,
+              58,
+              51,
+              52,
+              46,
+              57,
+              57,
+              44,
+              34,
+              97,
+              117,
+              116,
+              104,
+              111,
+              114,
+              73,
+              100,
+              34,
+              58,
+              49,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              67,
+              108,
+              101,
+              97,
+              110,
+              32,
+              67,
+              111,
+              100,
+              101,
+              34,
+              44,
+              34,
+              99,
+              111,
+              115,
+              116,
+              34,
+              58,
+              50,
+              57,
+              46,
+              57,
+              57,
+              44,
+              34,
+              97,
+              117,
+              116,
+              104,
+              111,
+              114,
+              73,
+              100,
+              34,
+              58,
+              50,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              82,
+              101,
+              102,
+              97,
+              99,
+              116,
+              111,
+              114,
+              105,
+              110,
+              103,
+              34,
+              44,
+              34,
+              99,
+              111,
+              115,
+              116,
+              34,
+              58,
+              51,
+              57,
+              46,
+              57,
+              57,
+              44,
+              34,
+              97,
+              117,
+              116,
+              104,
+              111,
+              114,
+              73,
+              100,
+              34,
+              58,
+              51,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 184
+        },
+        "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Each book has a price field",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 1,
+              "test": "Each book has a price field",
+              "message": "expected { id: 1, …(3) } to have property 'price'",
+              "stack": "AssertionError: expected { id: 1, …(3) } to have property 'price'\n   at Object.eval sandbox-script.js:2:2)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "35412298-a275-4013-8fcb-ea6dc549554e",
+          "length": 9,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "921fd60f-5956-4fa0-888d-5378d664e7fe"
+        },
+        "item": {
+          "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+          "name": "Get Book 1 - detail",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "books",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e8d2b378-68eb-4c94-b2cc-61b720347215",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "a538e951-b375-4e8d-a0bb-13ab46ed4112",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "70"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"46-7LNE9BuScY31kRHMQiL0mMH1O0s\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              84,
+              104,
+              101,
+              32,
+              80,
+              114,
+              97,
+              103,
+              109,
+              97,
+              116,
+              105,
+              99,
+              32,
+              80,
+              114,
+              111,
+              103,
+              114,
+              97,
+              109,
+              109,
+              101,
+              114,
+              34,
+              44,
+              34,
+              112,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              51,
+              52,
+              46,
+              57,
+              57,
+              44,
+              34,
+              97,
+              117,
+              116,
+              104,
+              111,
+              114,
+              73,
+              100,
+              34,
+              58,
+              49,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 70
+        },
+        "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "8e0e18dc-2d32-4b0a-860d-aaba888047a3",
+          "length": 9,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "ae750ce5-e9ea-4ee4-a057-dae5b9143b6c"
+        },
+        "item": {
+          "id": "bef4fe60-9097-4611-a760-457376f41683",
+          "name": "Get Book 2 - detail",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "2"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "books",
+              "2"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c46e3e53-adf2-43e3-bf89-e0da86837858",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "b537a91e-21f8-4ff5-9a65-85c8503ac9d8",
+          "status": "Internal Server Error",
+          "code": 500,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "33"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"21-u8tno/8IdqEY6PFcopkQe0syfE4\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              73,
+              110,
+              116,
+              101,
+              114,
+              110,
+              97,
+              108,
+              32,
+              115,
+              101,
+              114,
+              118,
+              101,
+              114,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 33
+        },
+        "id": "bef4fe60-9097-4611-a760-457376f41683",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status is 200",
+              "message": "expected 500 to deeply equal 200",
+              "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:4)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "cc37e09d-e396-403f-b3c4-5fb84fd0e865",
+          "length": 9,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "2b5a1621-8311-4ab6-a5d1-dc0e306bc4c3"
+        },
+        "item": {
+          "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+          "name": "Get Book 1 - availability",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "1",
+                "availability"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "books",
+              "1",
+              "availability"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "aa5a242f-7ae2-4073-af76-4502f05f837f",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "07e64cb7-bafc-4823-8313-2d6b71ecc760",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "36"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"24-iUN7q2XAmmbGg65P5li5u0AyeXQ\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              105,
+              110,
+              83,
+              116,
+              111,
+              99,
+              107,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              53,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 36
+        },
+        "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "cb04e489-cdfc-48bb-905a-5954b8c183a1",
+          "length": 9,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "cdf80f90-b141-4220-9445-8f3cd3124d58"
+        },
+        "item": {
+          "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+          "name": "Get Book 3 - availability (expected out of stock)",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "3",
+                "availability"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Book 3 is correctly reported out of stock', function () {",
+                  "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                  "});"
+                ],
+                "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "books",
+              "3",
+              "availability"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ae6ddec1-daf7-420a-8739-b6161e7cddbd",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "f6932cc6-d197-4ba0-9c76-501549375947",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "36"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"24-EaztGREKtP+8GbQ6FzzrwGtzL/Y\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              105,
+              110,
+              83,
+              116,
+              111,
+              99,
+              107,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              48,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 16,
+          "responseSize": 36
+        },
+        "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Book 3 is correctly reported out of stock",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 1,
+              "test": "Book 3 is correctly reported out of stock",
+              "message": "expected true to deeply equal false",
+              "stack": "AssertionError: expected true to deeply equal false\n   at Object.eval sandbox-script.js:2:6)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "8e4d47c4-3981-4c21-9233-9dd7ee4e260d",
+          "length": 9,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "61a46764-3c62-452c-8288-54d45d049cd9"
+        },
+        "item": {
+          "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+          "name": "Get Author 1",
+          "request": {
+            "url": {
+              "path": [
+                "authors",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d6ecb382-a7b0-4d80-84b1-b5994863369b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "86640c94-942c-4891-88dd-b2ce43726a17",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "27"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"1b-mb9nBSit6ccwDa2o09Pma8FApOg\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              65,
+              110,
+              100,
+              121,
+              32,
+              72,
+              117,
+              110,
+              116,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 27
+        },
+        "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "1aa09c2b-bd3c-4988-bb3c-5eda681a3072",
+          "length": 9,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "05565c32-3558-4151-b1fb-482c509b91ab"
+        },
+        "item": {
+          "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+          "name": "Get Author 1",
+          "request": {
+            "url": {
+              "path": [
+                "authors",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "4c5f2022-0ee2-40d7-92bd-9b17029f67b6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "ca711fca-86d2-40a0-ba63-96bdb7911e65",
+          "status": "Service Unavailable",
+          "code": 503,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "43"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"2b-nw5MDsDorVRCSSCBtDCokTXXc3k\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              83,
+              101,
+              114,
+              118,
+              105,
+              99,
+              101,
+              32,
+              116,
+              101,
+              109,
+              112,
+              111,
+              114,
+              97,
+              114,
+              105,
+              108,
+              121,
+              32,
+              117,
+              110,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 43
+        },
+        "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status is 200",
+              "message": "expected 503 to deeply equal 200",
+              "stack": "AssertionError: expected 503 to deeply equal 200\n   at Object.eval sandbox-script.js:1:8)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "394dcc9d-203e-4ae5-a845-92d301b81418",
+          "length": 9,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "e138d3b8-e912-4218-986b-7b95d3fb0c4d"
+        },
+        "item": {
+          "id": "6bed2a96-9695-477b-b82e-95484207d612",
+          "name": "Get Author 1",
+          "request": {
+            "url": {
+              "path": [
+                "authors",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "aa70fc77-e8e7-4603-8a99-a68659c86611",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "8113f691-a9b1-4810-94d3-c4ba7f2b0da6",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "27"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"1b-mb9nBSit6ccwDa2o09Pma8FApOg\""
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 14 Jul 2026 10:36:09 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              65,
+              110,
+              100,
+              121,
+              32,
+              72,
+              117,
+              110,
+              116,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 27
+        },
+        "id": "6bed2a96-9695-477b-b82e-95484207d612",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 487
+    },
+    "failures": [
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status is 200",
+          "message": "expected 401 to deeply equal 200",
+          "stack": "AssertionError: expected 401 to deeply equal 200\n   at Object.eval sandbox-script.js:1:1)",
+          "checksum": "4def419db0701a958ab244184cd7bd3b",
+          "id": "2bcf3b0d-ed16-4c1e-8fbe-825e46f32530",
+          "timestamp": 1784025369075,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+          "name": "Login - valid credentials",
+          "request": {
+            "url": {
+              "path": [
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                ],
+                "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 9,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "512748b5-ad74-4490-8310-82f51c5e7b53",
+          "httpRequestId": "4ae6f011-6882-4837-bce5-e69201d75891",
+          "scriptId": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+          "execution": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 1,
+          "test": "Returns a token",
+          "message": "expected { error: 'Invalid credentials' } to have property 'token'",
+          "stack": "AssertionError: expected { error: 'Invalid credentials' } to have property 'token'\n   at Object.eval sandbox-script.js:2:1)",
+          "checksum": "97856c46e26f64126689ddcf95ecec72",
+          "id": "305943af-f38f-4a83-a367-c93b2beaf003",
+          "timestamp": 1784025369078,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+          "name": "Login - valid credentials",
+          "request": {
+            "url": {
+              "path": [
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                ],
+                "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 9,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "512748b5-ad74-4490-8310-82f51c5e7b53",
+          "httpRequestId": "4ae6f011-6882-4837-bce5-e69201d75891",
+          "scriptId": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+          "execution": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 1,
+          "test": "Each book has a price field",
+          "message": "expected { id: 1, …(3) } to have property 'price'",
+          "stack": "AssertionError: expected { id: 1, …(3) } to have property 'price'\n   at Object.eval sandbox-script.js:2:2)",
+          "checksum": "b6fd304d64e5f2c15b5436f92d63f05c",
+          "id": "ffc91150-6b87-4320-978f-c120c3c21b5d",
+          "timestamp": 1784025369103,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 2,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+          "name": "Get Books - list",
+          "request": {
+            "url": {
+              "path": [
+                "books"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Each book has a price field', function () {",
+                  "  const books = pm.response.json();",
+                  "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                  "});"
+                ],
+                "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "ref": "cd560eb7-1289-46b9-97dc-f58d85c346fa",
+          "length": 9,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "a70cf236-5094-4afe-939d-780069cc938a",
+          "scriptId": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+          "execution": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status is 200",
+          "message": "expected 500 to deeply equal 200",
+          "stack": "AssertionError: expected 500 to deeply equal 200\n   at Object.eval sandbox-script.js:1:4)",
+          "checksum": "d549316fc6f0b0982ba2524e4ea234ad",
+          "id": "f8d6529e-e200-4ca2-8752-cc8d4ce01f4a",
+          "timestamp": 1784025369147,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 4,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "bef4fe60-9097-4611-a760-457376f41683",
+          "name": "Get Book 2 - detail",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "2"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "ref": "8e0e18dc-2d32-4b0a-860d-aaba888047a3",
+          "length": 9,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "ae750ce5-e9ea-4ee4-a057-dae5b9143b6c",
+          "scriptId": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+          "execution": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 1,
+          "test": "Book 3 is correctly reported out of stock",
+          "message": "expected true to deeply equal false",
+          "stack": "AssertionError: expected true to deeply equal false\n   at Object.eval sandbox-script.js:2:6)",
+          "checksum": "16071b3af05999b95a7ef908f4db2fb8",
+          "id": "7865094d-ba21-41f1-8b0b-cc28a3afe6c5",
+          "timestamp": 1784025369211,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 6,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+          "name": "Get Book 3 - availability (expected out of stock)",
+          "request": {
+            "url": {
+              "path": [
+                "books",
+                "3",
+                "availability"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Book 3 is correctly reported out of stock', function () {",
+                  "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                  "});"
+                ],
+                "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "ref": "cb04e489-cdfc-48bb-905a-5954b8c183a1",
+          "length": 9,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "cdf80f90-b141-4220-9445-8f3cd3124d58",
+          "scriptId": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+          "execution": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status is 200",
+          "message": "expected 503 to deeply equal 200",
+          "stack": "AssertionError: expected 503 to deeply equal 200\n   at Object.eval sandbox-script.js:1:8)",
+          "checksum": "40dfef2a9c70bc886e8cd0b2fd3d1311",
+          "id": "cbecd976-be20-4e62-92da-6aa8ff9e9cca",
+          "timestamp": 1784025369251,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 8,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+          "name": "Get Author 1",
+          "request": {
+            "url": {
+              "path": [
+                "authors",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "item": [
+            {
+              "id": "c0db5ca0-a313-4dc2-9dae-40ac10e133b1",
+              "name": "Login - valid credentials",
+              "request": {
+                "url": {
+                  "path": [
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3cbf1581-0acc-44be-a6b3-e2dfe46e8c19",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+                    ],
+                    "_lastExecutionId": "3a27a7f2-3d47-4326-9de8-93fe3fa49b4f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9c33b667-c38b-40f6-b441-26bc5e93770b",
+              "name": "Get Books - list",
+              "request": {
+                "url": {
+                  "path": [
+                    "books"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cedfef84-b8a5-4cba-8cf4-2e6702636d54",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Each book has a price field', function () {",
+                      "  const books = pm.response.json();",
+                      "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+                      "});"
+                    ],
+                    "_lastExecutionId": "f77d5d5b-9504-40ea-992c-8bab6b31838b"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1b51c8d4-2697-4f70-9d27-4d9a383e1b18",
+              "name": "Get Book 1 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4ec28b0a-d909-4833-b77b-db2c8e298248",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "56821f18-10aa-4e20-8c46-cdee9ffcbf8f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "bef4fe60-9097-4611-a760-457376f41683",
+              "name": "Get Book 2 - detail",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "2"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afd34af1-df78-4a19-ac2e-7921e3ec8efb",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "642d5f69-e3eb-46b7-b4f1-a7715915eea5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d83ab650-797d-4ef4-a523-8cb42fd6ccb3",
+              "name": "Get Book 1 - availability",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "1",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "182bdbe9-f6ae-408a-81cc-08f3ce19a37c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "8b0d7459-e8c6-4256-bba0-4202d8a94b80"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "03f765d0-085d-4c1e-b991-e23b4dbcb458",
+              "name": "Get Book 3 - availability (expected out of stock)",
+              "request": {
+                "url": {
+                  "path": [
+                    "books",
+                    "3",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3f20cad6-5c0f-4a0b-8424-d7b2edf19714",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                      "pm.test('Book 3 is correctly reported out of stock', function () {",
+                      "  pm.expect(pm.response.json().inStock).to.eql(false);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c4db76c5-e68c-4088-a17a-2ac7b3d9dd1d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e7ac1c5d-8a2f-42bf-a13e-c89c71968aee",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0bac16ff-7090-4774-8402-d441f9e15d6a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "90c1dfca-67c8-4055-8753-bc91d59bda73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "52c099a7-3236-4b81-a3e5-49f2975b0721",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "5f0138da-0c37-4401-87eb-f71f72f93514"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "6bed2a96-9695-477b-b82e-95484207d612",
+              "name": "Get Author 1",
+              "request": {
+                "url": {
+                  "path": [
+                    "authors",
+                    "1"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72905d7c-8a4a-4992-a634-c219a984a6f1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                    ],
+                    "_lastExecutionId": "f504a2b8-20f1-4269-8378-a67ba3ca6d86"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [],
+          "info": {
+            "_postman_id": "c745b286-a0fc-42a1-9748-a18ba67d3583",
+            "name": "Bookstore Regression Suite",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+          }
+        },
+        "cursor": {
+          "ref": "1aa09c2b-bd3c-4988-bb3c-5eda681a3072",
+          "length": 9,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "05565c32-3558-4151-b1fb-482c509b91ab",
+          "scriptId": "a47b455a-31cc-4a5c-a4e5-fd7154b1a630",
+          "execution": "5f0138da-0c37-4401-87eb-f71f72f93514"
+        }
+      }
+    ],
+    "error": null
+  }
+}

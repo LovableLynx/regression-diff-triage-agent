@@ -1,0 +1,174 @@
+{
+  "info": {
+    "name": "Bookstore Regression Suite",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login - valid credentials",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"demo\",\"password\":\"demo123\"}"
+        },
+        "url": { "raw": "{{baseUrl}}/login", "host": ["{{baseUrl}}"], "path": ["login"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+              "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Books - list",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/books", "host": ["{{baseUrl}}"], "path": ["books"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+              "pm.test('Each book has a price field', function () {",
+              "  const books = pm.response.json();",
+              "  books.forEach(b => pm.expect(b).to.have.property('price'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Book 1 - detail",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/books/1", "host": ["{{baseUrl}}"], "path": ["books", "1"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Book 2 - detail",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/books/2", "host": ["{{baseUrl}}"], "path": ["books", "2"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Book 1 - availability",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/books/1/availability", "host": ["{{baseUrl}}"], "path": ["books", "1", "availability"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Book 3 - availability (expected out of stock)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/books/3/availability", "host": ["{{baseUrl}}"], "path": ["books", "3", "availability"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+              "pm.test('Book 3 is correctly reported out of stock', function () {",
+              "  pm.expect(pm.response.json().inStock).to.eql(false);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Author 1",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/authors/1", "host": ["{{baseUrl}}"], "path": ["authors", "1"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Author 1",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/authors/1", "host": ["{{baseUrl}}"], "path": ["authors", "1"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Author 1",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/authors/1", "host": ["{{baseUrl}}"], "path": ["authors", "1"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

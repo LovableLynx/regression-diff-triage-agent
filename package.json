@@ -1,0 +1,17 @@
+{
+  "name": "regression-diff-triage-agent",
+  "version": "1.0.0",
+  "description": "Diagnoses why API regression tests broke by diffing before/after Newman runs and classifying root cause.",
+  "main": "src/index.js",
+  "scripts": {
+    "start:api": "node mock-api/server.js",
+    "run:before": "newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/before.json",
+    "run:after": "node mock-api/inject-failures.js && newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/after.json",
+    "triage": "node src/triage.js fixtures/before.json fixtures/after.json",
+    "demo": "npm run start:api & sleep 1 && npm run run:before && npm run run:after && npm run triage"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "newman": "^6.2.1"
+  }
+}
