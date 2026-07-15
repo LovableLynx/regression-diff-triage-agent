@@ -10,13 +10,13 @@ When software breaks after an update, this tool reads through all the error mess
 
 ## The problem
 
-When a QA suite goes from green to red after a code change, someone has to read every failing test log and figure out the root cause before they can even start fixing it. A 50-test regression run with 10 failures means 10 manual investigations — and most of those failures fall into a handful of repeating patterns (a renamed field, a broken endpoint, an auth change, a flaky test, a silent logic bug) that a human re-diagnoses from scratch every single time.
+When a QA suite goes from green to red after a code change, someone has to read every failing test log and figure out the root cause before they can even start fixing it. A 50-test regression run with 10 failures means 10 manual investigations and most of those failures fall into a handful of repeating patterns (a renamed field, a broken endpoint, an auth change, a flaky test, a silent logic bug) that a human re-diagnoses from scratch every single time.
 
 This is a real, recurring cost in QA work — not a hypothetical. It's the kind of triage I've done manually across API regression suites (Postman/Newman-based) in QA roles at Vettika AI Recruiter and OHealth.
 
 ## What it does
 
-Feed it two Newman (Postman CLI) JSON test reports — a "before" run and an "after" run against the same collection — and it diffs the outcomes per request, then classifies each broken test into one of six root-cause categories:
+Feed it two Newman (Postman CLI) JSON test reports — a "before" run and an "after" run against the same collection and it diffs the outcomes per request, then classifies each broken test into one of six root-cause categories:
 
 | Category | What it means |
 |---|---|
@@ -35,7 +35,7 @@ This project's classification engine (`src/triage.js`) was built collaboratively
 
 - Add the sixth failure category (`rate_limit_regression`) to the existing classifier, following the established pattern (category/severity/detail return shape) without touching the five categories already in place.
 - Add a corresponding mock API endpoint (`GET /books/:id/reviews`) and Postman assertion to demonstrate the new category end-to-end.
-- Independently verify its own change — running the full Newman before/after cycle, confirming all 6 categories classified correctly, and confirming the original 5 categories were untouched — before handing control back.
+- Independently verify its own change — running the full Newman before/after cycle, confirming all 6 categories classified correctly, and confirming the original 5 categories were untouched before handing control back.
 
 The `git` history in this repo shows the `before codex` checkpoint commit and the subsequent Codex-driven commit as two distinct points, so the diff is inspectable.
 
