@@ -12,7 +12,7 @@ When software breaks after an update, this tool reads through all the error mess
 
 When a QA suite goes from green to red after a code change, someone has to read every failing test log and figure out the root cause before they can even start fixing it. A 50-test regression run with 10 failures means 10 manual investigations and most of those failures fall into a handful of repeating patterns (a renamed field, a broken endpoint, an auth change, a flaky test, a silent logic bug) that a human re-diagnoses from scratch every single time.
 
-This is a real, recurring cost in QA work — not a hypothetical. It's the kind of triage I've done manually across API regression suites (Postman/Newman-based) in QA roles at Vettika AI Recruiter and OHealth.
+This is a real, recurring cost in QA work not a hypothetical. It's the kind of triage I've done manually across API regression suites (Postman/Newman-based) in QA roles at Vettika AI Recruiter and OHealth.
 
 ## What it does
 
