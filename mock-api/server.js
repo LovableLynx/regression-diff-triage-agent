@@ -11,6 +11,7 @@
  *   GET  /books               -> list books
  *   GET  /books/:id            -> get single book
  *   GET  /books/:id/availability -> stock check (logic-bug candidate)
+ *   GET  /books/:id/reviews     -> reviews lookup (rate-limit candidate)
  *   GET  /authors/:id          -> author lookup (flaky candidate)
  */
 
@@ -130,6 +131,27 @@ app.get('/books/:id/availability', (req, res) => {
   }
 
   return res.status(200).json({ id, inStock: actualStock > 0, quantity: actualStock });
+});
+
+// --- GET /books/:id/reviews ------------------------------------------
+// AFTER state: request remains successful but is predictably much slower,
+// simulating a throttled dependency or performance regression.
+app.get('/books/:id/reviews', async (req, res) => {
+  const state = getState();
+  const id = parseInt(req.params.id, 10);
+  const book = BOOKS.find((b) => b.id === id);
+
+  if (!book) {
+    return res.status(404).json({ error: 'Book not found' });
+  }
+
+  if (state.mode === 'after') {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  return res.status(200).json([
+    { id: 1, bookId: id, rating: 5, comment: 'Helpful and practical.' }
+  ]);
 });
 
 // --- GET /authors/:id --------------------------------------------------

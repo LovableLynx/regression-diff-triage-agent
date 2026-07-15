@@ -2,7 +2,7 @@
   "collection": {
     "item": [
       {
-        "id": "bca20d73-fe02-4bd4-a745-80a6ed259040",
+        "id": "130642c2-7f25-44ff-9415-37113c91a860",
         "name": "Login - valid credentials",
         "request": {
           "url": {
@@ -32,19 +32,19 @@
           {
             "listen": "test",
             "script": {
-              "id": "173e4075-b339-4722-9a2b-7b3dfac920f6",
+              "id": "88d29118-d471-4205-9ef4-262c8ef42807",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
                 "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
               ],
-              "_lastExecutionId": "094bc292-c0f6-4600-adb9-05ac3ab48167"
+              "_lastExecutionId": "22bd59a5-a77c-4ec3-ac01-56cf41b17a01"
             }
           }
         ]
       },
       {
-        "id": "bfc7958f-4589-47f5-a4f2-d8f683bf5791",
+        "id": "1b0d8f53-bfa9-4a53-b2e6-d7f2034e1060",
         "name": "Get Books - list",
         "request": {
           "url": {
@@ -64,7 +64,7 @@
           {
             "listen": "test",
             "script": {
-              "id": "f8c20735-e6a1-47cc-a7e3-03b545717ddb",
+              "id": "d9479d4b-fc8f-47a6-8ef7-39d8b173834a",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
@@ -73,13 +73,13 @@
                 "  books.forEach(b => pm.expect(b).to.have.property('price'));",
                 "});"
               ],
-              "_lastExecutionId": "222ff6cf-019d-4621-a56c-ac7380df18fe"
+              "_lastExecutionId": "a7321128-a2db-4b34-b9e0-23d7db4f0d22"
             }
           }
         ]
       },
       {
-        "id": "44080ecf-1b91-446e-a877-44b8354f9722",
+        "id": "4cdfc463-c003-4971-a33c-3364af2102df",
         "name": "Get Book 1 - detail",
         "request": {
           "url": {
@@ -100,18 +100,18 @@
           {
             "listen": "test",
             "script": {
-              "id": "55688d09-64a8-4149-a46b-97370675da5a",
+              "id": "666f8d46-1b55-4a10-a5db-83044bb83905",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "88bceecf-b23d-477c-aad9-a959b000cf1e"
+              "_lastExecutionId": "48247b82-e746-4c45-891f-7a3b5b6f7e52"
             }
           }
         ]
       },
       {
-        "id": "6a54463d-71cf-445e-9600-7cf10aed0759",
+        "id": "24d2df45-3119-4f37-998b-6aa54de4ad49",
         "name": "Get Book 2 - detail",
         "request": {
           "url": {
@@ -132,18 +132,18 @@
           {
             "listen": "test",
             "script": {
-              "id": "b0529962-5be3-4017-bea9-7229287558d4",
+              "id": "16a1a596-14f9-486d-b23c-4a77833c744b",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "a2b43cc7-9805-410c-96c8-58e16fa387be"
+              "_lastExecutionId": "acae294c-f3d2-4f28-ae2c-c0c49c9c0785"
             }
           }
         ]
       },
       {
-        "id": "a8fa9931-dcf6-4a1f-b439-f08e6dca6be1",
+        "id": "536b2849-1839-425b-ba92-863d668aaed5",
         "name": "Get Book 1 - availability",
         "request": {
           "url": {
@@ -165,18 +165,18 @@
           {
             "listen": "test",
             "script": {
-              "id": "5e8ca8e1-5dbf-4d31-b3dc-3549ca2b8ccb",
+              "id": "e1829b03-3e05-482f-87e0-2963bc387ffa",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "db7ca003-d817-46a8-bbea-55c2101449c0"
+              "_lastExecutionId": "8e9a7342-4b84-476b-8aa2-e08368dcc96a"
             }
           }
         ]
       },
       {
-        "id": "9610e7b2-d780-4d22-9bf9-9bbf4847bb13",
+        "id": "d1213440-685e-43fc-84ee-307d12e071f2",
         "name": "Get Book 3 - availability (expected out of stock)",
         "request": {
           "url": {
@@ -198,7 +198,7 @@
           {
             "listen": "test",
             "script": {
-              "id": "acaca47e-c9ff-4b2e-9ec3-ba6d6371de55",
+              "id": "a69c9e14-5dbc-48f1-9070-68db6732e47f",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
@@ -206,13 +206,47 @@
                 "  pm.expect(pm.response.json().inStock).to.eql(false);",
                 "});"
               ],
-              "_lastExecutionId": "e3cefe21-8002-45ea-96d3-259c78512dca"
+              "_lastExecutionId": "627e506d-f0c3-48e2-8764-7c341cc3f1c0"
             }
           }
         ]
       },
       {
-        "id": "9b1f32b7-a38c-4b73-ba22-32a548cebb34",
+        "id": "3212b14f-0dea-4cb1-a753-21c0fd170959",
+        "name": "Get Book 1 - reviews",
+        "request": {
+          "url": {
+            "path": [
+              "books",
+              "1",
+              "reviews"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e6b292df-67dd-4beb-8805-4ee1b02fede6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                "pm.test('Response time is under 100ms', function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
+              ],
+              "_lastExecutionId": "012e5cea-cf1d-4a99-b88d-f5ded2ee5862"
+            }
+          }
+        ]
+      },
+      {
+        "id": "599d0e14-7ade-4ad9-a939-ca7ecfa477de",
         "name": "Get Author 1",
         "request": {
           "url": {
@@ -233,18 +267,18 @@
           {
             "listen": "test",
             "script": {
-              "id": "53151cb9-3484-422a-8f6a-b0586f879ede",
+              "id": "609558c2-7d93-4765-b46c-03c9f1de4ed1",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "a58f98b3-07a7-4d5e-bf21-b582cf47f0a8"
+              "_lastExecutionId": "41e09863-6cdd-4fbe-aa12-e9136340f117"
             }
           }
         ]
       },
       {
-        "id": "d84769f6-1eb0-4484-86c4-417d0825509e",
+        "id": "f7715777-adf6-454b-ba44-5be5b5742e53",
         "name": "Get Author 1",
         "request": {
           "url": {
@@ -265,18 +299,18 @@
           {
             "listen": "test",
             "script": {
-              "id": "03364518-50e1-47f5-947d-b286cef53807",
+              "id": "bf02bbab-d701-46b0-9fbf-eea005b61b7b",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "9d37380c-c328-4d8f-8579-4fd7ef977396"
+              "_lastExecutionId": "73b19f8b-a0b9-47ec-aea2-9474547aee7b"
             }
           }
         ]
       },
       {
-        "id": "85f7779a-1207-4698-adec-90fefd63fb46",
+        "id": "f7bf8e1d-78bc-4153-bb75-e341e4e46d77",
         "name": "Get Author 1",
         "request": {
           "url": {
@@ -297,12 +331,12 @@
           {
             "listen": "test",
             "script": {
-              "id": "f02eb73c-9639-4e57-80c1-d7acb9b459dc",
+              "id": "b04f00d8-3539-4f91-b9fe-3284a11d6140",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
               ],
-              "_lastExecutionId": "64416738-4c6e-4eda-bcea-7b387ad7ccb6"
+              "_lastExecutionId": "d103a1bc-a2bd-4ffd-900b-b15ec34208fa"
             }
           }
         ]
@@ -311,7 +345,7 @@
     "event": [],
     "variable": [],
     "info": {
-      "_postman_id": "6e649faf-ed0d-4542-96ed-5a3600d7f615",
+      "_postman_id": "c9022b5c-3720-43e7-87c1-a17551d6e4d6",
       "name": "Bookstore Regression Suite",
       "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     }
@@ -328,7 +362,7 @@
     ]
   },
   "globals": {
-    "id": "cb10c59d-59cb-43b7-a24d-3b890abffb4a",
+    "id": "957ae6fc-d969-45c2-95a4-a95c33f58534",
     "values": []
   },
   "run": {
@@ -339,37 +373,37 @@
         "failed": 0
       },
       "items": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
       "scripts": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
       "prerequests": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
       "requests": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
       "tests": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
       "assertions": {
-        "total": 12,
+        "total": 14,
         "pending": 0,
         "failed": 0
       },
       "testScripts": {
-        "total": 9,
+        "total": 10,
         "pending": 0,
         "failed": 0
       },
@@ -380,10 +414,10 @@
       }
     },
     "timings": {
-      "responseAverage": 7.666666666666667,
-      "responseMin": 3,
-      "responseMax": 38,
-      "responseSd": 10.770329614269007,
+      "responseAverage": 29.6,
+      "responseMin": 6,
+      "responseMax": 232,
+      "responseSd": 67.47473601282188,
       "dnsAverage": 0,
       "dnsMin": 0,
       "dnsMax": 0,
@@ -392,25 +426,25 @@
       "firstByteMin": 0,
       "firstByteMax": 0,
       "firstByteSd": 0,
-      "started": 1784025367644,
-      "completed": 1784025367889
+      "started": 1784111597107,
+      "completed": 1784111598675
     },
     "executions": [
       {
         "cursor": {
           "position": 0,
           "iteration": 0,
-          "length": 9,
+          "length": 10,
           "cycles": 1,
           "empty": false,
           "eof": false,
           "bof": true,
           "cr": false,
-          "ref": "e793414e-84d7-43b0-ae07-1b79131c8518",
-          "httpRequestId": "9533962b-1b1e-402a-b0be-1c39e9b3313a"
+          "ref": "35c07a15-bf6a-4e59-b4e2-a2d67c5ae688",
+          "httpRequestId": "dba18f25-5674-4c35-8585-72a75e653fc9"
         },
         "item": {
-          "id": "bca20d73-fe02-4bd4-a745-80a6ed259040",
+          "id": "130642c2-7f25-44ff-9415-37113c91a860",
           "name": "Login - valid credentials",
           "request": {
             "url": {
@@ -440,13 +474,13 @@
             {
               "listen": "test",
               "script": {
-                "id": "173e4075-b339-4722-9a2b-7b3dfac920f6",
+                "id": "88d29118-d471-4205-9ef4-262c8ef42807",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
                   "pm.test('Returns a token', function () { pm.expect(pm.response.json()).to.have.property('token'); });"
                 ],
-                "_lastExecutionId": "094bc292-c0f6-4600-adb9-05ac3ab48167"
+                "_lastExecutionId": "22bd59a5-a77c-4ec3-ac01-56cf41b17a01"
               }
             }
           ]
@@ -486,7 +520,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "82fcc284-44e7-4c9d-8c9a-a814fe515641",
+              "value": "69be7f27-e1a9-43fd-99ee-97885736b058",
               "system": true
             },
             {
@@ -517,7 +551,7 @@
           }
         },
         "response": {
-          "id": "57fa7f99-fb30-42b1-ac2e-0cc2323b3e88",
+          "id": "812f9874-5d14-47da-bcc6-7960c7abf103",
           "status": "OK",
           "code": 200,
           "header": [
@@ -539,7 +573,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -589,10 +623,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 38,
+          "responseTime": 232,
           "responseSize": 33
         },
-        "id": "bca20d73-fe02-4bd4-a745-80a6ed259040",
+        "id": "130642c2-7f25-44ff-9415-37113c91a860",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -606,15 +640,15 @@
       },
       {
         "cursor": {
-          "ref": "1d2cc49d-deba-4d90-95af-f216c74028dd",
-          "length": 9,
+          "ref": "6668e671-cfc8-4dc5-89a7-0377ff30e2df",
+          "length": 10,
           "cycles": 1,
           "position": 1,
           "iteration": 0,
-          "httpRequestId": "22c7e432-bff7-4736-8623-03bf07e6f7df"
+          "httpRequestId": "94689e3e-6966-4191-8cb1-fa4cf4549f2a"
         },
         "item": {
-          "id": "bfc7958f-4589-47f5-a4f2-d8f683bf5791",
+          "id": "1b0d8f53-bfa9-4a53-b2e6-d7f2034e1060",
           "name": "Get Books - list",
           "request": {
             "url": {
@@ -634,7 +668,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "f8c20735-e6a1-47cc-a7e3-03b545717ddb",
+                "id": "d9479d4b-fc8f-47a6-8ef7-39d8b173834a",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
@@ -643,7 +677,7 @@
                   "  books.forEach(b => pm.expect(b).to.have.property('price'));",
                   "});"
                 ],
-                "_lastExecutionId": "222ff6cf-019d-4621-a56c-ac7380df18fe"
+                "_lastExecutionId": "a7321128-a2db-4b34-b9e0-23d7db4f0d22"
               }
             }
           ]
@@ -679,7 +713,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "f8c786d1-73f6-4648-bc76-1afafc7a3bbc",
+              "value": "536b7c6f-f611-4ed6-8922-c3e1f870b5ba",
               "system": true
             },
             {
@@ -701,7 +735,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "bd6a5064-f6a4-431e-bbcd-44d32664f9a3",
+          "id": "9624dd02-0ad0-4b75-aeb6-e711c153314a",
           "status": "OK",
           "code": 200,
           "header": [
@@ -723,7 +757,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -927,10 +961,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 5,
+          "responseTime": 10,
           "responseSize": 187
         },
-        "id": "bfc7958f-4589-47f5-a4f2-d8f683bf5791",
+        "id": "1b0d8f53-bfa9-4a53-b2e6-d7f2034e1060",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -944,15 +978,15 @@
       },
       {
         "cursor": {
-          "ref": "b5c78587-d3fe-4ac6-b127-e470be23ef2e",
-          "length": 9,
+          "ref": "c0cf111c-abfc-44ce-94cb-99c24a335850",
+          "length": 10,
           "cycles": 1,
           "position": 2,
           "iteration": 0,
-          "httpRequestId": "ae243894-1a24-489b-8fe3-080bfbd86388"
+          "httpRequestId": "732bf6b2-133d-4aa6-8997-3b3018b37f56"
         },
         "item": {
-          "id": "44080ecf-1b91-446e-a877-44b8354f9722",
+          "id": "4cdfc463-c003-4971-a33c-3364af2102df",
           "name": "Get Book 1 - detail",
           "request": {
             "url": {
@@ -973,12 +1007,12 @@
             {
               "listen": "test",
               "script": {
-                "id": "55688d09-64a8-4149-a46b-97370675da5a",
+                "id": "666f8d46-1b55-4a10-a5db-83044bb83905",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ],
-                "_lastExecutionId": "88bceecf-b23d-477c-aad9-a959b000cf1e"
+                "_lastExecutionId": "48247b82-e746-4c45-891f-7a3b5b6f7e52"
               }
             }
           ]
@@ -1015,7 +1049,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "96a1d7dc-327a-4433-be45-3eacff20b0f6",
+              "value": "05a9fc2f-5017-4d91-a5c2-a2098a65aab0",
               "system": true
             },
             {
@@ -1037,7 +1071,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "f217f096-1f3b-4bd2-85ab-68cc99ec335b",
+          "id": "80af902f-77c0-441d-998c-2b9f52df50ba",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1059,7 +1093,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -1146,10 +1180,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 4,
+          "responseTime": 6,
           "responseSize": 70
         },
-        "id": "44080ecf-1b91-446e-a877-44b8354f9722",
+        "id": "4cdfc463-c003-4971-a33c-3364af2102df",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -1159,15 +1193,15 @@
       },
       {
         "cursor": {
-          "ref": "fe2538f0-b8a7-45c6-b93a-b57ac3e2b65c",
-          "length": 9,
+          "ref": "38f2a843-eadf-433d-b64d-2c0f3993c53b",
+          "length": 10,
           "cycles": 1,
           "position": 3,
           "iteration": 0,
-          "httpRequestId": "65abf16b-07dd-4b18-a245-33b099b66aee"
+          "httpRequestId": "cc55f97d-7a3d-46f1-b03c-15170f36f5a1"
         },
         "item": {
-          "id": "6a54463d-71cf-445e-9600-7cf10aed0759",
+          "id": "24d2df45-3119-4f37-998b-6aa54de4ad49",
           "name": "Get Book 2 - detail",
           "request": {
             "url": {
@@ -1188,12 +1222,12 @@
             {
               "listen": "test",
               "script": {
-                "id": "b0529962-5be3-4017-bea9-7229287558d4",
+                "id": "16a1a596-14f9-486d-b23c-4a77833c744b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ],
-                "_lastExecutionId": "a2b43cc7-9805-410c-96c8-58e16fa387be"
+                "_lastExecutionId": "acae294c-f3d2-4f28-ae2c-c0c49c9c0785"
               }
             }
           ]
@@ -1230,7 +1264,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "4f2489cb-9e16-462d-ab70-0d25058b1fa1",
+              "value": "0cf37aa0-da0b-49c2-9b8c-209758f2022b",
               "system": true
             },
             {
@@ -1252,7 +1286,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "3bc62477-5aaa-4cc1-a2b0-d1f5c0053d57",
+          "id": "3cd794d9-7794-4251-809d-e58b22edb164",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1274,7 +1308,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -1347,10 +1381,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 6,
+          "responseTime": 7,
           "responseSize": 56
         },
-        "id": "6a54463d-71cf-445e-9600-7cf10aed0759",
+        "id": "24d2df45-3119-4f37-998b-6aa54de4ad49",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -1360,15 +1394,15 @@
       },
       {
         "cursor": {
-          "ref": "4c2e0114-5289-4e78-a54b-a5ecc380ddd4",
-          "length": 9,
+          "ref": "2397db3d-2634-48b7-a924-0d711083d8e3",
+          "length": 10,
           "cycles": 1,
           "position": 4,
           "iteration": 0,
-          "httpRequestId": "47425714-2653-4f77-966f-6595126286fd"
+          "httpRequestId": "43d84ae6-6329-4630-881a-856245b7697a"
         },
         "item": {
-          "id": "a8fa9931-dcf6-4a1f-b439-f08e6dca6be1",
+          "id": "536b2849-1839-425b-ba92-863d668aaed5",
           "name": "Get Book 1 - availability",
           "request": {
             "url": {
@@ -1390,12 +1424,12 @@
             {
               "listen": "test",
               "script": {
-                "id": "5e8ca8e1-5dbf-4d31-b3dc-3549ca2b8ccb",
+                "id": "e1829b03-3e05-482f-87e0-2963bc387ffa",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ],
-                "_lastExecutionId": "db7ca003-d817-46a8-bbea-55c2101449c0"
+                "_lastExecutionId": "8e9a7342-4b84-476b-8aa2-e08368dcc96a"
               }
             }
           ]
@@ -1433,7 +1467,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "82fbe796-203e-4014-8603-fd18beaa8ca7",
+              "value": "b8811ccf-1269-4fbf-9b12-3385643b9503",
               "system": true
             },
             {
@@ -1455,7 +1489,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "5d3e6c2c-e148-45fb-98ba-47a5a30c33f9",
+          "id": "f2899cda-fb48-4098-8fd9-d7e302077d9c",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1477,7 +1511,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -1530,10 +1564,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 3,
+          "responseTime": 7,
           "responseSize": 36
         },
-        "id": "a8fa9931-dcf6-4a1f-b439-f08e6dca6be1",
+        "id": "536b2849-1839-425b-ba92-863d668aaed5",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -1543,15 +1577,15 @@
       },
       {
         "cursor": {
-          "ref": "52e370fc-30f2-4f43-a9c3-62285e43a1d7",
-          "length": 9,
+          "ref": "9071497f-42df-45fd-a0cb-c9c023292e8c",
+          "length": 10,
           "cycles": 1,
           "position": 5,
           "iteration": 0,
-          "httpRequestId": "2ede8799-448b-4839-95f3-4c6e0e68da04"
+          "httpRequestId": "5a71aab2-dff2-4808-bf59-1749a16d497c"
         },
         "item": {
-          "id": "9610e7b2-d780-4d22-9bf9-9bbf4847bb13",
+          "id": "d1213440-685e-43fc-84ee-307d12e071f2",
           "name": "Get Book 3 - availability (expected out of stock)",
           "request": {
             "url": {
@@ -1573,7 +1607,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "acaca47e-c9ff-4b2e-9ec3-ba6d6371de55",
+                "id": "a69c9e14-5dbc-48f1-9070-68db6732e47f",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
@@ -1581,7 +1615,7 @@
                   "  pm.expect(pm.response.json().inStock).to.eql(false);",
                   "});"
                 ],
-                "_lastExecutionId": "e3cefe21-8002-45ea-96d3-259c78512dca"
+                "_lastExecutionId": "627e506d-f0c3-48e2-8764-7c341cc3f1c0"
               }
             }
           ]
@@ -1619,7 +1653,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "19b9dbd4-f371-42da-b253-344f55530a1d",
+              "value": "d355fb55-8ed8-4214-b2ed-beafda1f4745",
               "system": true
             },
             {
@@ -1641,7 +1675,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "e2770bcb-3fd8-4a28-b791-f72487dad716",
+          "id": "6a16ef73-1444-4b9e-bbd1-6e3afa112de1",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1663,7 +1697,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:17 GMT"
             },
             {
               "key": "Connection",
@@ -1717,10 +1751,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 3,
+          "responseTime": 7,
           "responseSize": 37
         },
-        "id": "9610e7b2-d780-4d22-9bf9-9bbf4847bb13",
+        "id": "d1213440-685e-43fc-84ee-307d12e071f2",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -1734,21 +1768,22 @@
       },
       {
         "cursor": {
-          "ref": "e1956a7d-bef5-4144-a585-07ac6a6736c9",
-          "length": 9,
+          "ref": "fedce339-f33a-417e-94a6-580312cd9f5c",
+          "length": 10,
           "cycles": 1,
           "position": 6,
           "iteration": 0,
-          "httpRequestId": "6ef0ef56-f473-4a3f-942e-f6ab2c97a475"
+          "httpRequestId": "47e134d5-331c-43e6-8569-0e2978136a47"
         },
         "item": {
-          "id": "9b1f32b7-a38c-4b73-ba22-32a548cebb34",
-          "name": "Get Author 1",
+          "id": "3212b14f-0dea-4cb1-a753-21c0fd170959",
+          "name": "Get Book 1 - reviews",
           "request": {
             "url": {
               "path": [
-                "authors",
-                "1"
+                "books",
+                "1",
+                "reviews"
               ],
               "host": [
                 "{{baseUrl}}"
@@ -1763,12 +1798,13 @@
             {
               "listen": "test",
               "script": {
-                "id": "53151cb9-3484-422a-8f6a-b0586f879ede",
+                "id": "e6b292df-67dd-4beb-8805-4ee1b02fede6",
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('Response time is under 100ms', function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
                 ],
-                "_lastExecutionId": "a58f98b3-07a7-4d5e-bf21-b582cf47f0a8"
+                "_lastExecutionId": "012e5cea-cf1d-4a99-b88d-f5ded2ee5862"
               }
             }
           ]
@@ -1778,8 +1814,9 @@
             "protocol": "http",
             "port": "3000",
             "path": [
-              "authors",
-              "1"
+              "books",
+              "1",
+              "reviews"
             ],
             "host": [
               "localhost"
@@ -1805,7 +1842,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "086637a9-26d0-45e5-b3ed-b7072a8d01c2",
+              "value": "efd5cd21-00c6-4de0-b21e-5d3336cc2af8",
               "system": true
             },
             {
@@ -1827,7 +1864,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "21f8d1ef-a295-4987-9a67-2baf9dbc7e2e",
+          "id": "383a26d4-65d3-4101-b39d-7dfa2a82162c",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1841,15 +1878,15 @@
             },
             {
               "key": "Content-Length",
-              "value": "27"
+              "value": "67"
             },
             {
               "key": "ETag",
-              "value": "W/\"1b-mb9nBSit6ccwDa2o09Pma8FApOg\""
+              "value": "W/\"43-Y9tAnSeowYFKdkKhNp73lct4jt4\""
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:18 GMT"
             },
             {
               "key": "Connection",
@@ -1863,6 +1900,7 @@
           "stream": {
             "type": "Buffer",
             "data": [
+              91,
               123,
               34,
               105,
@@ -1872,49 +1910,92 @@
               49,
               44,
               34,
-              110,
-              97,
-              109,
-              101,
+              98,
+              111,
+              111,
+              107,
+              73,
+              100,
               34,
               58,
+              49,
+              44,
               34,
-              65,
+              114,
+              97,
+              116,
+              105,
               110,
-              100,
-              121,
-              32,
-              72,
-              117,
+              103,
+              34,
+              58,
+              53,
+              44,
+              34,
+              99,
+              111,
+              109,
+              109,
+              101,
               110,
               116,
               34,
-              125
+              58,
+              34,
+              72,
+              101,
+              108,
+              112,
+              102,
+              117,
+              108,
+              32,
+              97,
+              110,
+              100,
+              32,
+              112,
+              114,
+              97,
+              99,
+              116,
+              105,
+              99,
+              97,
+              108,
+              46,
+              34,
+              125,
+              93
             ]
           },
           "cookie": [],
-          "responseTime": 3,
-          "responseSize": 27
+          "responseTime": 7,
+          "responseSize": 67
         },
-        "id": "9b1f32b7-a38c-4b73-ba22-32a548cebb34",
+        "id": "3212b14f-0dea-4cb1-a753-21c0fd170959",
         "assertions": [
           {
             "assertion": "Status is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Response time is under 100ms",
             "skipped": false
           }
         ]
       },
       {
         "cursor": {
-          "ref": "6d9247fd-de03-48af-b91e-33a5bbecc6fc",
-          "length": 9,
+          "ref": "9fc8a71b-8adb-45e1-b861-0f446a0ed6f1",
+          "length": 10,
           "cycles": 1,
           "position": 7,
           "iteration": 0,
-          "httpRequestId": "26be9316-969c-4835-b4d6-aa81e18cfe0f"
+          "httpRequestId": "c0275b98-3006-4e5b-a801-bbe78e089ddd"
         },
         "item": {
-          "id": "d84769f6-1eb0-4484-86c4-417d0825509e",
+          "id": "599d0e14-7ade-4ad9-a939-ca7ecfa477de",
           "name": "Get Author 1",
           "request": {
             "url": {
@@ -1935,12 +2016,12 @@
             {
               "listen": "test",
               "script": {
-                "id": "03364518-50e1-47f5-947d-b286cef53807",
+                "id": "609558c2-7d93-4765-b46c-03c9f1de4ed1",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ],
-                "_lastExecutionId": "9d37380c-c328-4d8f-8579-4fd7ef977396"
+                "_lastExecutionId": "41e09863-6cdd-4fbe-aa12-e9136340f117"
               }
             }
           ]
@@ -1977,7 +2058,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "62a42dcc-e915-4ccf-a6c3-121c7fa28fbd",
+              "value": "f207422c-ad3b-46c7-a6d7-f8274d5bfa18",
               "system": true
             },
             {
@@ -1999,7 +2080,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "d0bcb167-305c-4cad-b9ab-39112d1f7d0f",
+          "id": "2e368249-d706-4893-b303-2c0ff27b4577",
           "status": "OK",
           "code": 200,
           "header": [
@@ -2021,7 +2102,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:18 GMT"
             },
             {
               "key": "Connection",
@@ -2065,10 +2146,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 3,
+          "responseTime": 7,
           "responseSize": 27
         },
-        "id": "d84769f6-1eb0-4484-86c4-417d0825509e",
+        "id": "599d0e14-7ade-4ad9-a939-ca7ecfa477de",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -2078,15 +2159,15 @@
       },
       {
         "cursor": {
-          "ref": "035162ce-0a04-4db2-9081-2d0c214a0db7",
-          "length": 9,
+          "ref": "6111a813-88dc-4aae-a9e5-602540411e60",
+          "length": 10,
           "cycles": 1,
           "position": 8,
           "iteration": 0,
-          "httpRequestId": "bcf9bd14-0550-4efb-b69a-f67245316d78"
+          "httpRequestId": "4172aded-06d8-4ef3-a2d5-9e48da5674f2"
         },
         "item": {
-          "id": "85f7779a-1207-4698-adec-90fefd63fb46",
+          "id": "f7715777-adf6-454b-ba44-5be5b5742e53",
           "name": "Get Author 1",
           "request": {
             "url": {
@@ -2107,12 +2188,12 @@
             {
               "listen": "test",
               "script": {
-                "id": "f02eb73c-9639-4e57-80c1-d7acb9b459dc",
+                "id": "bf02bbab-d701-46b0-9fbf-eea005b61b7b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ],
-                "_lastExecutionId": "64416738-4c6e-4eda-bcea-7b387ad7ccb6"
+                "_lastExecutionId": "73b19f8b-a0b9-47ec-aea2-9474547aee7b"
               }
             }
           ]
@@ -2149,7 +2230,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "9840c5aa-b741-4f03-b643-80d083cd8de3",
+              "value": "bfbe6395-9b69-4e06-88ff-41ac874b8345",
               "system": true
             },
             {
@@ -2171,7 +2252,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "a7ef3737-3948-41fb-a5ad-a06e24dab08f",
+          "id": "f37f87f0-cab7-4ded-91a7-9473e0d82261",
           "status": "OK",
           "code": 200,
           "header": [
@@ -2193,7 +2274,7 @@
             },
             {
               "key": "Date",
-              "value": "Tue, 14 Jul 2026 10:36:07 GMT"
+              "value": "Wed, 15 Jul 2026 10:33:18 GMT"
             },
             {
               "key": "Connection",
@@ -2237,10 +2318,182 @@
             ]
           },
           "cookie": [],
-          "responseTime": 4,
+          "responseTime": 6,
           "responseSize": 27
         },
-        "id": "85f7779a-1207-4698-adec-90fefd63fb46",
+        "id": "f7715777-adf6-454b-ba44-5be5b5742e53",
+        "assertions": [
+          {
+            "assertion": "Status is 200",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "3822efc4-dab7-498a-aef2-789fa7258517",
+          "length": 10,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "e8f527ab-49ef-4d24-a33e-e55ff2c406d5"
+        },
+        "item": {
+          "id": "f7bf8e1d-78bc-4153-bb75-e341e4e46d77",
+          "name": "Get Author 1",
+          "request": {
+            "url": {
+              "path": [
+                "authors",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b04f00d8-3539-4f91-b9fe-3284a11d6140",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "_lastExecutionId": "d103a1bc-a2bd-4ffd-900b-b15ec34208fa"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "authors",
+              "1"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ba739f89-5c2d-4f8a-8db7-ea40249aa0bc",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "440fb396-0efc-47fd-9735-1872503b1ee2",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "27"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"1b-mb9nBSit6ccwDa2o09Pma8FApOg\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 15 Jul 2026 10:33:18 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              65,
+              110,
+              100,
+              121,
+              32,
+              72,
+              117,
+              110,
+              116,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 7,
+          "responseSize": 27
+        },
+        "id": "f7bf8e1d-78bc-4153-bb75-e341e4e46d77",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -2250,7 +2503,7 @@
       }
     ],
     "transfers": {
-      "responseTotal": 500
+      "responseTotal": 567
     },
     "failures": [],
     "error": null

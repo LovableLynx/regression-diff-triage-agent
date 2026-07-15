@@ -15,6 +15,8 @@
  *                         response field/shape now fails
  *   - flaky             : the same request appears multiple times in
  *                         the after run with inconsistent outcomes
+ *   - rate_limit_regression : previously-fast, healthy request now
+ *                         receives 429s or has a major latency increase
  *   - logic_bug         : status unchanged, an assertion fails, and it
  *                         is not a schema-shape assertion (silent
  *                         correctness regression)
@@ -29,6 +31,7 @@ function loadReport(filePath) {
   return raw.run.executions.map((exec) => ({
     name: exec.item.name,
     statusCode: exec.response ? exec.response.code : null,
+    responseTime: exec.response ? exec.response.responseTime : null,
     assertions: (exec.assertions || []).map((a) => ({
       name: a.assertion,
       passed: !a.error,
@@ -55,6 +58,27 @@ function isSchemaAssertion(assertion) {
     /property|field|shape|schema/i.test(assertion.errorMessage || '');
 }
 
+const MIN_RESPONSE_TIME_INCREASE_MS = 100;
+const RESPONSE_TIME_MULTIPLIER = 2;
+
+function averageResponseTime(executions) {
+  const responseTimes = executions
+    .map((e) => e.responseTime)
+    .filter((responseTime) => Number.isFinite(responseTime));
+
+  if (!responseTimes.length) return null;
+  return responseTimes.reduce((total, responseTime) => total + responseTime, 0) / responseTimes.length;
+}
+
+function hasSignificantResponseTimeIncrease(beforeExecs, afterExecs) {
+  const beforeAverage = averageResponseTime(beforeExecs);
+  const afterAverage = averageResponseTime(afterExecs);
+
+  return beforeAverage !== null && afterAverage !== null &&
+    afterAverage >= beforeAverage * RESPONSE_TIME_MULTIPLIER &&
+    afterAverage - beforeAverage >= MIN_RESPONSE_TIME_INCREASE_MS;
+}
+
 function classify(name, beforeExecs, afterExecs) {
   const beforeStatuses = new Set(beforeExecs.map((e) => e.statusCode));
   const afterStatuses = afterExecs.map((e) => e.statusCode);
@@ -63,9 +87,34 @@ function classify(name, beforeExecs, afterExecs) {
   const beforeAllPassed = beforeExecs.every((e) => e.assertions.every((a) => a.passed));
   const afterAnyFailed = afterExecs.some((e) => e.assertions.some((a) => !a.passed));
   const afterAnyStatusFail = afterExecs.some((e) => e.statusCode >= 400);
+  const responseTimeRegressed = hasSignificantResponseTimeIncrease(beforeExecs, afterExecs);
 
-  if (beforeAllPassed && !afterAnyFailed && !afterAnyStatusFail) {
+  if (beforeAllPassed && !afterAnyFailed && !afterAnyStatusFail && !responseTimeRegressed) {
     return null; // still healthy, nothing to report
+  }
+
+  const wasHealthy = [...beforeStatuses].every((s) => s < 400);
+  const nowUnhealthy = afterStatuses.some((s) => s >= 400);
+
+  // Rate limiting is deterministic throttling/performance degradation,
+  // even when repeated calls expose both 200 and 429 responses.
+  if (wasHealthy && (afterStatuses.includes(429) || responseTimeRegressed)) {
+    const beforeAverage = averageResponseTime(beforeExecs);
+    const afterAverage = averageResponseTime(afterExecs);
+
+    if (afterStatuses.includes(429)) {
+      return {
+        category: 'rate_limit_regression',
+        severity: 'high',
+        detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
+      };
+    }
+
+    return {
+      category: 'rate_limit_regression',
+      severity: 'high',
+      detail: `Request remains successful but average response time increased from ${Math.round(beforeAverage)}ms to ${Math.round(afterAverage)}ms (at least ${RESPONSE_TIME_MULTIPLIER}x and ${MIN_RESPONSE_TIME_INCREASE_MS}ms slower). Likely throttling or a performance regression.`
+    };
   }
 
   // Flaky: after run has multiple executions of the same request with
@@ -77,9 +126,6 @@ function classify(name, beforeExecs, afterExecs) {
       detail: `Inconsistent results across ${afterExecs.length} repeated calls: statuses seen = [${[...uniqueAfterStatuses].join(', ')}]`
     };
   }
-
-  const wasHealthy = [...beforeStatuses].every((s) => s < 400);
-  const nowUnhealthy = afterStatuses.some((s) => s >= 400);
 
   if (wasHealthy && nowUnhealthy) {
     const badStatus = afterStatuses.find((s) => s >= 400);
@@ -163,6 +209,7 @@ function printReport(grouped, totalFailures) {
     endpoint_down: 'Endpoint Down',
     schema_change: 'Schema Changes',
     flaky: 'Flaky Tests',
+    rate_limit_regression: 'Rate Limit Regressions',
     logic_bug: 'Logic Bugs (Silent Regressions)',
     unknown: 'Unclassified'
   };
