@@ -85,3 +85,6 @@ fixtures/           Sample before/after Newman JSON reports
 - **Synthetic, not confidential data.** The demo uses a generic mock bookstore API rather than real employer data, so the classifier's behavior is fully reproducible and inspectable by judges without any confidentiality concerns.
 - **Deterministic failure injection.** Each demo run injects the same five failure types (plus rate-limiting) in a controlled way, so the classifier's accuracy can be verified precisely rather than hoping real-world data happens to contain good examples.
 - **Newman-native.** Newman is Postman's official CLI test runner and a common tool in real QA pipelines  this integrates with an existing workflow rather than inventing a new one.
+
+This project was built entirely within the Build Week Submission Period (July 13–21, 2026).
+
