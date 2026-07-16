@@ -58,6 +58,27 @@ function isSchemaAssertion(assertion) {
     /property|field|shape|schema/i.test(assertion.errorMessage || '');
 }
 
+function parseMultiValueStatusAssertion(errorMessage) {
+  if (typeof errorMessage !== 'string') return null;
+
+  const match = errorMessage.match(/expected\s*\[\s*([^\]]*?)\s*\]\s*to\s*include\s*(-?\d+)\b/i);
+  if (!match) return null;
+
+  const expectedStatuses = match[1].split(',').map((value) => value.trim());
+  if (!expectedStatuses.length || expectedStatuses.some((value) => !/^\d+$/.test(value))) {
+    return null;
+  }
+
+  return {
+    expectedStatuses: expectedStatuses.map(Number),
+    actualStatus: Number(match[2])
+  };
+}
+
+function isHttpStatusCode(status) {
+  return Number.isInteger(status) && status >= 100 && status <= 599;
+}
+
 const MIN_RESPONSE_TIME_INCREASE_MS = 100;
 const RESPONSE_TIME_MULTIPLIER = 2;
 
@@ -148,6 +169,39 @@ function classify(name, beforeExecs, afterExecs) {
     const failedAssertions = afterExecs
       .flatMap((e) => e.assertions)
       .filter((a) => !a.passed);
+    const multiValueStatusFailure = failedAssertions
+      .map((assertion) => ({ assertion, status: parseMultiValueStatusAssertion(assertion.errorMessage) }))
+      .find(({ status }) => status && isHttpStatusCode(status.actualStatus));
+
+    // Chai can express a status assertion as an allowed array of values.
+    // Reclassify the unmatched actual status with the existing status categories.
+    if (multiValueStatusFailure && wasHealthy) {
+      const { actualStatus } = multiValueStatusFailure.status;
+
+      if (actualStatus === 429) {
+        return {
+          category: 'rate_limit_regression',
+          severity: 'high',
+          detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
+        };
+      }
+
+      if (actualStatus >= 400) {
+        if ((actualStatus === 401 || actualStatus === 403) && isAuthRelated(name)) {
+          return {
+            category: 'auth_failure',
+            severity: 'high',
+            detail: `Request that previously succeeded now returns ${actualStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.`
+          };
+        }
+
+        return {
+          category: 'endpoint_down',
+          severity: 'high',
+          detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${actualStatus}. Endpoint or upstream dependency likely broken.`
+        };
+      }
+    }
     const schemaRelated = failedAssertions.some(isSchemaAssertion);
 
     if (schemaRelated) {
@@ -158,11 +212,13 @@ function classify(name, beforeExecs, afterExecs) {
       };
     }
 
-    return {
-      category: 'logic_bug',
-      severity: 'high',
+    if (!multiValueStatusFailure) {
+      return {
+        category: 'logic_bug',
+        severity: 'high',
       detail: `Response status is unchanged (still 200), but a business-logic assertion now fails: "${failedAssertions[0].errorMessage}". Silent correctness regression — no error code, so this would be missed by status-code-only monitoring.`
-    };
+      };
+    }
   }
 
   return {
