@@ -86,6 +86,33 @@ test('keeps a 3x rate-limit response-time regression at high severity', () => {
   assert.equal(result.severity, 'high');
 });
 
+test('classifies an unchanged-status business-logic assertion failure as high-severity logic_bug', () => {
+  const result = classify(
+    'Get Book 3 availability',
+    [execution(200)],
+    [execution(200, [{ passed: false, name: 'Book is out of stock', errorMessage: 'expected true to deeply equal false' }])]
+  );
+
+  assert.equal(result.category, 'logic_bug');
+  assert.equal(result.severity, 'high');
+});
+
+test('classifies universal schema assertion failures as high-severity schema_change', () => {
+  const schemaFailure = {
+    passed: false,
+    name: 'Response has price property',
+    errorMessage: "expected object to have property 'price'"
+  };
+  const result = classify(
+    'Get Books',
+    [execution(200), execution(200)],
+    [execution(200, [schemaFailure]), execution(200, [schemaFailure])]
+  );
+
+  assert.equal(result.category, 'schema_change');
+  assert.equal(result.severity, 'high');
+});
+
 test('uses a failed response body as an additional auth signal', () => {
   const result = classify(
     'Protected resource',
