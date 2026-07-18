@@ -34,6 +34,7 @@ function loadReport(filePath) {
     }
 
     return raw.run.executions.map((exec) => ({
+      id: exec.item.id || null,
       name: exec.item.name,
       statusCode: exec.response ? exec.response.code : null,
       responseTime: exec.response ? exec.response.responseTime : null,
@@ -48,13 +49,23 @@ function loadReport(filePath) {
   }
 }
 
-function groupByName(executions) {
+function groupByName(executions, stableItemIds = null) {
   const map = new Map();
   for (const exec of executions) {
-    if (!map.has(exec.name)) map.set(exec.name, []);
-    map.get(exec.name).push(exec);
+    const key = exec.id && (!stableItemIds || stableItemIds.has(exec.id))
+      ? exec.id
+      : exec.name;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(exec);
   }
   return map;
+}
+
+function sharedItemIds(beforeReport, afterReport) {
+  const beforeIds = new Set(beforeReport.map((exec) => exec.id).filter(Boolean));
+  return new Set(afterReport
+    .map((exec) => exec.id)
+    .filter((id) => id && beforeIds.has(id)));
 }
 
 function isAuthRelated(name) {
@@ -135,6 +146,10 @@ function classify(name, beforeExecs, afterExecs) {
 
   const wasHealthy = [...beforeStatuses].every((s) => Number.isFinite(s) && s < 400);
   const nowUnhealthy = afterStatuses.some((s) => s === null || s === undefined || s >= 400);
+  const resultsAreIntermittent = afterExecs.length > 1 && uniqueAfterStatuses.size > 1;
+  const intermittencyDetail = resultsAreIntermittent
+    ? ` Results are intermittent: statuses seen = [${[...uniqueAfterStatuses].join(', ')}].`
+    : '';
 
   if (wasHealthy && afterHasNoResponse) {
     return {
@@ -165,29 +180,29 @@ function classify(name, beforeExecs, afterExecs) {
     };
   }
 
-  // Flaky: after run has multiple executions of the same request with
-  // inconsistent status codes (some healthy, some not).
-  if (afterExecs.length > 1 && uniqueAfterStatuses.size > 1) {
-    return {
-      category: 'flaky',
-      severity: 'medium',
-      detail: `Inconsistent results across ${afterExecs.length} repeated calls: statuses seen = [${[...uniqueAfterStatuses].join(', ')}]`
-    };
-  }
-
   if (wasHealthy && nowUnhealthy) {
     const badStatus = afterStatuses.find((s) => s === null || s === undefined || s >= 400);
     if ((badStatus === 401 || badStatus === 403) && isAuthRelated(name)) {
       return {
         category: 'auth_failure',
         severity: 'high',
-        detail: `Request that previously succeeded now returns ${badStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.`
+        detail: `Request that previously succeeded now returns ${badStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.${intermittencyDetail}`
       };
     }
     return {
       category: 'endpoint_down',
       severity: 'high',
-      detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${badStatus}. Endpoint or upstream dependency likely broken.`
+      detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${badStatus}. Endpoint or upstream dependency likely broken.${intermittencyDetail}`
+    };
+  }
+
+  // Flaky: after run has multiple executions with inconsistent statuses but
+  // no status-based regression against a previously healthy baseline.
+  if (resultsAreIntermittent) {
+    return {
+      category: 'flaky',
+      severity: 'medium',
+      detail: `Inconsistent results across ${afterExecs.length} repeated calls: statuses seen = [${[...uniqueAfterStatuses].join(', ')}]`
     };
   }
 
@@ -262,19 +277,25 @@ function main() {
     process.exit(1);
   }
 
+  let beforeReport;
+  let afterReport;
   let beforeExecs;
   let afterExecs;
   try {
-    beforeExecs = groupByName(loadReport(beforePath));
-    afterExecs = groupByName(loadReport(afterPath));
+    beforeReport = loadReport(beforePath);
+    afterReport = loadReport(afterPath);
+    const stableIds = sharedItemIds(beforeReport, afterReport);
+    beforeExecs = groupByName(beforeReport, stableIds);
+    afterExecs = groupByName(afterReport, stableIds);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
   }
 
   const results = [];
-  for (const [name, afterList] of afterExecs.entries()) {
-    const beforeList = beforeExecs.get(name) || [];
+  for (const [key, afterList] of afterExecs.entries()) {
+    const name = afterList[0].name;
+    const beforeList = beforeExecs.get(key) || [];
     const classification = classify(name, beforeList, afterList);
     if (classification) {
       results.push({ name, ...classification });

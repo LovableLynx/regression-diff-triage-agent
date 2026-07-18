@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
-const { classify } = require('../src/triage');
+const { classify, groupByName } = require('../src/triage');
 
 function execution(statusCode, assertions = [{ passed: true }]) {
   return { statusCode, responseTime: 10, assertions };
@@ -28,6 +28,30 @@ test('identifies an after-only request as a test with no baseline', () => {
 
   assert.equal(result.category, 'new_test_no_baseline');
   assert.match(result.detail, /no baseline/i);
+});
+
+test('prefers endpoint_down over flaky for an intermittent failure after a healthy baseline', () => {
+  const result = classify(
+    'Get Orders',
+    [execution(200), execution(200)],
+    [execution(200), execution(500)]
+  );
+
+  assert.equal(result.category, 'endpoint_down');
+  assert.match(result.detail, /intermittent/i);
+});
+
+test('groups duplicate request names by Newman item ID when available', () => {
+  const groups = groupByName([
+    { id: 'admin-login', name: 'Login', statusCode: 200 },
+    { id: 'customer-login', name: 'Login', statusCode: 401 },
+    { id: null, name: 'Health check', statusCode: 200 }
+  ]);
+
+  assert.equal(groups.size, 3);
+  assert.equal(groups.get('admin-login')[0].statusCode, 200);
+  assert.equal(groups.get('customer-login')[0].statusCode, 401);
+  assert.equal(groups.get('Health check')[0].statusCode, 200);
 });
 
 test('prints an actionable CLI error for an unreadable report file', () => {
@@ -64,4 +88,6 @@ test('the committed fixture pair still reports the original six findings', (t) =
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Total broken\/flagged tests: 6/);
+  assert.match(result.stdout, /Endpoint Down \(2\)/);
+  assert.doesNotMatch(result.stdout, /Flaky Tests/);
 });
