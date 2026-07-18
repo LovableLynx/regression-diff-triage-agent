@@ -9,6 +9,7 @@
     "run:before": "newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/before.json",
     "run:after": "node mock-api/inject-failures.js && newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/after.json",
     "triage": "node src/triage.js fixtures/before.json fixtures/after.json",
+    "triage:run": "node src/run-triage.js",
     "demo": "npm run start:api & sleep 1 && npm run run:before && npm run run:after && npm run triage"
   },
   "dependencies": {

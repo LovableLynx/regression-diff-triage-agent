@@ -71,6 +71,16 @@ node src/triage.js fixtures/before.json fixtures/after.json
 
 You should see a report with 6 findings: one each of `auth_failure`, `schema_change`, `endpoint_down`, `rate_limit_regression`, `logic_bug`, and `flaky`.
 
+## Capture and triage your own collection
+
+The convenience runner captures a temporary before report, pauses for your code change, captures the after report, and runs the existing triage command. It never writes to `fixtures/`.
+
+```bash
+npm run triage:run -- ./collections/my-api.postman_collection.json ./collections/my-api.postman_environment.json
+```
+
+After the before snapshot, make and deploy your change, then press Enter. The temporary reports are removed after the triage report is printed. Newman must be installed (`npm install` installs this project's local copy).
+
 ## Project structure
 
 ```
