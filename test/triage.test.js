@@ -95,6 +95,7 @@ test('classifies an unchanged-status business-logic assertion failure as high-se
 
   assert.equal(result.category, 'logic_bug');
   assert.equal(result.severity, 'high');
+  assert.match(result.detail, /expected true to deeply equal false/);
 });
 
 test('classifies universal schema assertion failures as high-severity schema_change', () => {
@@ -110,6 +111,37 @@ test('classifies universal schema assertion failures as high-severity schema_cha
   );
 
   assert.equal(result.category, 'schema_change');
+  assert.equal(result.severity, 'high');
+  assert.match(result.detail, /expected object to have property 'price'/);
+});
+
+test('prefers endpoint_down for an intermittent status regression with assertion failures', () => {
+  const result = classify(
+    'Get Orders',
+    [execution(200), execution(200)],
+    [
+      execution(200),
+      execution(500, [{ passed: false, name: 'Response is valid', errorMessage: 'expected false to equal true' }])
+    ]
+  );
+
+  // A previously healthy 5xx is a specific root-cause signal, so it wins
+  // over the competing assertion failure and intermittent-status signals.
+  assert.equal(result.category, 'endpoint_down');
+  assert.equal(result.severity, 'medium');
+  assert.match(result.detail, /intermittent/i);
+});
+
+test('prefers rate_limit_regression over a simultaneous schema assertion failure', () => {
+  const result = classify(
+    'Get Orders',
+    [execution(200, undefined, { responseTime: 100 })],
+    [execution(200, [{ passed: false, name: 'Response schema', errorMessage: 'expected object to have property price' }], { responseTime: 300 })]
+  );
+
+  // Rate-limit/performance detection precedes assertion classification, and
+  // classify() returns one primary category for each request.
+  assert.equal(result.category, 'rate_limit_regression');
   assert.equal(result.severity, 'high');
 });
 
@@ -148,6 +180,53 @@ test('prints an actionable CLI error for an unreadable report file', () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Unable to load Newman report "fixtures[\\/]does-not-exist\.json"/);
   assert.doesNotMatch(result.stderr, /\bat \S+ \(/);
+});
+
+test('prints an actionable CLI error for syntactically invalid report JSON', (t) => {
+  const root = path.resolve(__dirname, '..');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'triage-invalid-report-'));
+  const invalidReport = path.join(tempDir, 'invalid.json');
+  t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
+  fs.writeFileSync(invalidReport, '{not valid json');
+
+  const result = spawnSync(
+    process.execPath,
+    ['src/triage.js', invalidReport, 'fixtures/after.json'],
+    { cwd: root, encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Unable to load Newman report/);
+  assert.doesNotMatch(result.stderr, /\bat \S+ \(/);
+});
+
+test('reports an after-only request as new_test_no_baseline through the CLI pipeline', (t) => {
+  const root = path.resolve(__dirname, '..');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'triage-new-test-'));
+  const beforeReport = path.join(tempDir, 'before.json');
+  const afterReport = path.join(tempDir, 'after.json');
+  t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
+
+  fs.writeFileSync(beforeReport, JSON.stringify({ run: { executions: [] } }));
+  fs.writeFileSync(afterReport, JSON.stringify({
+    run: {
+      executions: [{
+        item: { id: 'new-request', name: 'New Request' },
+        response: { code: 500, responseTime: 10 },
+        assertions: []
+      }]
+    }
+  }));
+
+  const result = spawnSync(
+    process.execPath,
+    ['src/triage.js', beforeReport, afterReport],
+    { cwd: root, encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /New Tests Without a Baseline \(1\)/);
+  assert.match(result.stdout, /New Request/);
 });
 
 test('the committed fixture pair still reports the original six findings', (t) => {
