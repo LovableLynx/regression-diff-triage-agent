@@ -27,17 +27,25 @@
 const fs = require('fs');
 
 function loadReport(filePath) {
-  const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  return raw.run.executions.map((exec) => ({
-    name: exec.item.name,
-    statusCode: exec.response ? exec.response.code : null,
-    responseTime: exec.response ? exec.response.responseTime : null,
-    assertions: (exec.assertions || []).map((a) => ({
-      name: a.assertion,
-      passed: !a.error,
-      errorMessage: a.error ? a.error.message : null
-    }))
-  }));
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    if (!raw.run || !Array.isArray(raw.run.executions)) {
+      throw new Error('expected a Newman JSON report with run.executions');
+    }
+
+    return raw.run.executions.map((exec) => ({
+      name: exec.item.name,
+      statusCode: exec.response ? exec.response.code : null,
+      responseTime: exec.response ? exec.response.responseTime : null,
+      assertions: (exec.assertions || []).map((a) => ({
+        name: a.assertion,
+        passed: !a.error,
+        errorMessage: a.error ? a.error.message : null
+      }))
+    }));
+  } catch (error) {
+    throw new Error(`Unable to load Newman report "${filePath}": ${error.message}`);
+  }
 }
 
 function groupByName(executions) {
@@ -105,17 +113,36 @@ function classify(name, beforeExecs, afterExecs) {
   const afterStatuses = afterExecs.map((e) => e.statusCode);
   const uniqueAfterStatuses = new Set(afterStatuses);
 
+  if (beforeExecs.length === 0) {
+    return {
+      category: 'new_test_no_baseline',
+      severity: 'medium',
+      detail: 'This test has no baseline in the before run; cannot classify as a regression.'
+    };
+  }
+
   const beforeAllPassed = beforeExecs.every((e) => e.assertions.every((a) => a.passed));
   const afterAnyFailed = afterExecs.some((e) => e.assertions.some((a) => !a.passed));
-  const afterAnyStatusFail = afterExecs.some((e) => e.statusCode >= 400);
+  const afterHasNoResponse = afterExecs.some((e) => e.statusCode === null || e.statusCode === undefined);
+  const afterAnyStatusFail = afterExecs.some((e) =>
+    e.statusCode === null || e.statusCode === undefined || e.statusCode >= 400
+  );
   const responseTimeRegressed = hasSignificantResponseTimeIncrease(beforeExecs, afterExecs);
 
   if (beforeAllPassed && !afterAnyFailed && !afterAnyStatusFail && !responseTimeRegressed) {
     return null; // still healthy, nothing to report
   }
 
-  const wasHealthy = [...beforeStatuses].every((s) => s < 400);
-  const nowUnhealthy = afterStatuses.some((s) => s >= 400);
+  const wasHealthy = [...beforeStatuses].every((s) => Number.isFinite(s) && s < 400);
+  const nowUnhealthy = afterStatuses.some((s) => s === null || s === undefined || s >= 400);
+
+  if (wasHealthy && afterHasNoResponse) {
+    return {
+      category: 'endpoint_down',
+      severity: 'high',
+      detail: `Request that previously returned ${[...beforeStatuses].join('/')} had no response received. Endpoint, network, or upstream dependency may be unavailable.`
+    };
+  }
 
   // Rate limiting is deterministic throttling/performance degradation,
   // even when repeated calls expose both 200 and 429 responses.
@@ -149,7 +176,7 @@ function classify(name, beforeExecs, afterExecs) {
   }
 
   if (wasHealthy && nowUnhealthy) {
-    const badStatus = afterStatuses.find((s) => s >= 400);
+    const badStatus = afterStatuses.find((s) => s === null || s === undefined || s >= 400);
     if ((badStatus === 401 || badStatus === 403) && isAuthRelated(name)) {
       return {
         category: 'auth_failure',
@@ -235,8 +262,15 @@ function main() {
     process.exit(1);
   }
 
-  const beforeExecs = groupByName(loadReport(beforePath));
-  const afterExecs = groupByName(loadReport(afterPath));
+  let beforeExecs;
+  let afterExecs;
+  try {
+    beforeExecs = groupByName(loadReport(beforePath));
+    afterExecs = groupByName(loadReport(afterPath));
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
 
   const results = [];
   for (const [name, afterList] of afterExecs.entries()) {
@@ -267,6 +301,7 @@ function printReport(grouped, totalFailures) {
     flaky: 'Flaky Tests',
     rate_limit_regression: 'Rate Limit Regressions',
     logic_bug: 'Logic Bugs (Silent Regressions)',
+    new_test_no_baseline: 'New Tests Without a Baseline',
     unknown: 'Unclassified'
   };
 

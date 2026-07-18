@@ -4,6 +4,7 @@
   "description": "Diagnoses why API regression tests broke by diffing before/after Newman runs and classifying root cause.",
   "main": "src/index.js",
   "scripts": {
+    "test": "node --test",
     "start:api": "node mock-api/server.js",
     "run:before": "newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/before.json",
     "run:after": "node mock-api/inject-failures.js && newman run collections/bookstore.postman_collection.json -e collections/env.postman_environment.json -r json --reporter-json-export fixtures/after.json",
