@@ -17,6 +17,13 @@ function execution(statusCode, assertions = [{ passed: true }], options = {}) {
   };
 }
 
+function findingFor(findings, category) {
+  assert.ok(Array.isArray(findings));
+  const finding = findings.find((item) => item.category === category);
+  assert.ok(finding, `Expected a ${category} finding`);
+  return finding;
+}
+
 test('classifies a missing response after a healthy baseline as endpoint_down', () => {
   const result = classify(
     'Get Orders',
@@ -24,15 +31,15 @@ test('classifies a missing response after a healthy baseline as endpoint_down', 
     [execution(null)]
   );
 
-  assert.equal(result.category, 'endpoint_down');
-  assert.match(result.detail, /no response received/i);
+  const finding = findingFor(result, 'endpoint_down');
+  assert.match(finding.detail, /no response received/i);
 });
 
 test('identifies an after-only request as a test with no baseline', () => {
   const result = classify('New Request', [], [execution(500)]);
 
-  assert.equal(result.category, 'new_test_no_baseline');
-  assert.match(result.detail, /no baseline/i);
+  const finding = findingFor(result, 'new_test_no_baseline');
+  assert.match(finding.detail, /no baseline/i);
 });
 
 test('prefers endpoint_down over flaky for an intermittent failure after a healthy baseline', () => {
@@ -42,16 +49,16 @@ test('prefers endpoint_down over flaky for an intermittent failure after a healt
     [execution(200), execution(500)]
   );
 
-  assert.equal(result.category, 'endpoint_down');
-  assert.equal(result.severity, 'medium');
-  assert.match(result.detail, /intermittent/i);
+  const finding = findingFor(result, 'endpoint_down');
+  assert.equal(finding.severity, 'medium');
+  assert.match(finding.detail, /intermittent/i);
 });
 
 test('keeps a complete endpoint outage at high severity', () => {
   const result = classify('Get Orders', [execution(200)], [execution(500)]);
 
-  assert.equal(result.category, 'endpoint_down');
-  assert.equal(result.severity, 'high');
+  const finding = findingFor(result, 'endpoint_down');
+  assert.equal(finding.severity, 'high');
 });
 
 test('downgrades partial schema failures and rate-limit regressions below 3x', () => {
@@ -69,10 +76,8 @@ test('downgrades partial schema failures and rate-limit regressions below 3x', (
     [execution(200, undefined, { responseTime: 220 })]
   );
 
-  assert.equal(schemaResult.category, 'schema_change');
-  assert.equal(schemaResult.severity, 'medium');
-  assert.equal(rateLimitResult.category, 'rate_limit_regression');
-  assert.equal(rateLimitResult.severity, 'medium');
+  assert.equal(findingFor(schemaResult, 'schema_change').severity, 'medium');
+  assert.equal(findingFor(rateLimitResult, 'rate_limit_regression').severity, 'medium');
 });
 
 test('keeps a 3x rate-limit response-time regression at high severity', () => {
@@ -82,8 +87,7 @@ test('keeps a 3x rate-limit response-time regression at high severity', () => {
     [execution(200, undefined, { responseTime: 300 })]
   );
 
-  assert.equal(result.category, 'rate_limit_regression');
-  assert.equal(result.severity, 'high');
+  assert.equal(findingFor(result, 'rate_limit_regression').severity, 'high');
 });
 
 test('classifies an unchanged-status business-logic assertion failure as high-severity logic_bug', () => {
@@ -93,9 +97,9 @@ test('classifies an unchanged-status business-logic assertion failure as high-se
     [execution(200, [{ passed: false, name: 'Book is out of stock', errorMessage: 'expected true to deeply equal false' }])]
   );
 
-  assert.equal(result.category, 'logic_bug');
-  assert.equal(result.severity, 'high');
-  assert.match(result.detail, /expected true to deeply equal false/);
+  const finding = findingFor(result, 'logic_bug');
+  assert.equal(finding.severity, 'high');
+  assert.match(finding.detail, /expected true to deeply equal false/);
 });
 
 test('classifies universal schema assertion failures as high-severity schema_change', () => {
@@ -110,12 +114,12 @@ test('classifies universal schema assertion failures as high-severity schema_cha
     [execution(200, [schemaFailure]), execution(200, [schemaFailure])]
   );
 
-  assert.equal(result.category, 'schema_change');
-  assert.equal(result.severity, 'high');
-  assert.match(result.detail, /expected object to have property 'price'/);
+  const finding = findingFor(result, 'schema_change');
+  assert.equal(finding.severity, 'high');
+  assert.match(finding.detail, /expected object to have property 'price'/);
 });
 
-test('prefers endpoint_down for an intermittent status regression with assertion failures', () => {
+test('prefers endpoint_down for an intermittent status regression and also returns logic_bug', () => {
   const result = classify(
     'Get Orders',
     [execution(200), execution(200)],
@@ -125,24 +129,22 @@ test('prefers endpoint_down for an intermittent status regression with assertion
     ]
   );
 
-  // A previously healthy 5xx is a specific root-cause signal, so it wins
-  // over the competing assertion failure and intermittent-status signals.
-  assert.equal(result.category, 'endpoint_down');
-  assert.equal(result.severity, 'medium');
-  assert.match(result.detail, /intermittent/i);
+  const endpointFinding = findingFor(result, 'endpoint_down');
+  const logicFinding = findingFor(result, 'logic_bug');
+  assert.equal(endpointFinding.severity, 'medium');
+  assert.match(endpointFinding.detail, /intermittent/i);
+  assert.equal(logicFinding.severity, 'high');
 });
 
-test('prefers rate_limit_regression over a simultaneous schema assertion failure', () => {
+test('prefers rate_limit_regression for simultaneous signals and also returns schema_change', () => {
   const result = classify(
     'Get Orders',
     [execution(200, undefined, { responseTime: 100 })],
     [execution(200, [{ passed: false, name: 'Response schema', errorMessage: 'expected object to have property price' }], { responseTime: 300 })]
   );
 
-  // Rate-limit/performance detection precedes assertion classification, and
-  // classify() returns one primary category for each request.
-  assert.equal(result.category, 'rate_limit_regression');
-  assert.equal(result.severity, 'high');
+  assert.equal(findingFor(result, 'rate_limit_regression').severity, 'high');
+  assert.equal(findingFor(result, 'schema_change').severity, 'high');
 });
 
 test('uses a failed response body as an additional auth signal', () => {
@@ -152,8 +154,8 @@ test('uses a failed response body as an additional auth signal', () => {
     [execution(401, undefined, { responseBody: '{"error":"unauthorized session"}' })]
   );
 
-  assert.equal(result.category, 'auth_failure');
-  assert.equal(result.severity, 'high');
+  const finding = findingFor(result, 'auth_failure');
+  assert.equal(finding.severity, 'high');
 });
 
 test('groups duplicate request names by Newman item ID when available', () => {

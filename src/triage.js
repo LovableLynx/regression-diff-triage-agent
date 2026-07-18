@@ -93,6 +93,16 @@ function isSchemaAssertion(assertion) {
     /property|field|shape|schema/i.test(assertion.errorMessage || '');
 }
 
+function isStatusCodeAssertion(assertion) {
+  return /status/i.test(assertion.name || '') ||
+    /expected\s+\d+\s+to\s+(?:deeply\s+)?equal\s+\d+/i.test(assertion.errorMessage || '');
+}
+
+function isResponseTimeAssertion(assertion) {
+  return /response\s*time|latency|duration/i.test(assertion.name || '') ||
+    /response\s*time|latency|duration/i.test(assertion.errorMessage || '');
+}
+
 function parseMultiValueStatusAssertion(errorMessage) {
   if (typeof errorMessage !== 'string') return null;
 
@@ -159,11 +169,11 @@ function classify(name, beforeExecs, afterExecs) {
   const uniqueAfterStatuses = new Set(afterStatuses);
 
   if (beforeExecs.length === 0) {
-    return {
+    return [{
       category: 'new_test_no_baseline',
       severity: 'medium',
       detail: 'This test has no baseline in the before run; cannot classify as a regression.'
-    };
+    }];
   }
 
   const beforeAllPassed = beforeExecs.every((e) => e.assertions.every((a) => a.passed));
@@ -175,8 +185,15 @@ function classify(name, beforeExecs, afterExecs) {
   const responseTimeRegressed = hasSignificantResponseTimeIncrease(beforeExecs, afterExecs);
 
   if (beforeAllPassed && !afterAnyFailed && !afterAnyStatusFail && !responseTimeRegressed) {
-    return null; // still healthy, nothing to report
+    return []; // still healthy, nothing to report
   }
+
+  const findings = [];
+  const addFinding = (finding) => {
+    if (!findings.some((existing) => existing.category === finding.category)) {
+      findings.push(finding);
+    }
+  };
 
   const wasHealthy = [...beforeStatuses].every((s) => Number.isFinite(s) && s < 400);
   const nowUnhealthy = afterStatuses.some((s) => s === null || s === undefined || s >= 400);
@@ -190,11 +207,11 @@ function classify(name, beforeExecs, afterExecs) {
       : '';
 
   if (wasHealthy && afterHasNoResponse) {
-    return {
+    addFinding({
       category: 'endpoint_down',
       severity: failureSeverity(afterExecs),
       detail: `Request that previously returned ${[...beforeStatuses].join('/')} had no response received. Endpoint, network, or upstream dependency may be unavailable.${intermittencyDetail}`
-    };
+    });
   }
 
   // Rate limiting is deterministic throttling/performance degradation,
@@ -204,44 +221,45 @@ function classify(name, beforeExecs, afterExecs) {
     const afterAverage = averageResponseTime(afterExecs);
 
     if (afterStatuses.includes(429)) {
-      return {
+      addFinding({
         category: 'rate_limit_regression',
         severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
         detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
-      };
+      });
+    } else {
+      addFinding({
+        category: 'rate_limit_regression',
+        severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
+        detail: `Request remains successful but average response time increased from ${Math.round(beforeAverage)}ms to ${Math.round(afterAverage)}ms (at least ${RESPONSE_TIME_MULTIPLIER}x and ${MIN_RESPONSE_TIME_INCREASE_MS}ms slower). Likely throttling or a performance regression.`
+      });
     }
-
-    return {
-      category: 'rate_limit_regression',
-      severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
-      detail: `Request remains successful but average response time increased from ${Math.round(beforeAverage)}ms to ${Math.round(afterAverage)}ms (at least ${RESPONSE_TIME_MULTIPLIER}x and ${MIN_RESPONSE_TIME_INCREASE_MS}ms slower). Likely throttling or a performance regression.`
-    };
   }
 
-  if (wasHealthy && nowUnhealthy) {
+  if (wasHealthy && nowUnhealthy && !afterHasNoResponse && !afterStatuses.includes(429)) {
     const badStatus = afterStatuses.find((s) => s === null || s === undefined || s >= 400);
     if ((badStatus === 401 || badStatus === 403) && isAuthRelated(name, afterExecs)) {
-      return {
+      addFinding({
         category: 'auth_failure',
         severity: failureSeverity(afterExecs),
         detail: `Request that previously succeeded now returns ${badStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.${intermittencyDetail}`
-      };
+      });
+    } else {
+      addFinding({
+        category: 'endpoint_down',
+        severity: failureSeverity(afterExecs),
+        detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${badStatus}. Endpoint or upstream dependency likely broken.${intermittencyDetail}`
+      });
     }
-    return {
-      category: 'endpoint_down',
-      severity: failureSeverity(afterExecs),
-      detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${badStatus}. Endpoint or upstream dependency likely broken.${intermittencyDetail}`
-    };
   }
 
   // Flaky: after run has multiple executions with inconsistent statuses but
   // no status-based regression against a previously healthy baseline.
-  if (resultsAreIntermittent) {
-    return {
+  if (resultsAreIntermittent && !wasHealthy) {
+    addFinding({
       category: 'flaky',
       severity: 'medium',
       detail: `Inconsistent results across ${afterExecs.length} repeated calls: statuses seen = [${[...uniqueAfterStatuses].join(', ')}]`
-    };
+    });
   }
 
   // Status codes unchanged (still healthy), but an assertion regressed.
@@ -259,53 +277,67 @@ function classify(name, beforeExecs, afterExecs) {
       const { actualStatus } = multiValueStatusFailure.status;
 
       if (actualStatus === 429) {
-        return {
+        addFinding({
           category: 'rate_limit_regression',
           severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
           detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
-        };
+        });
       }
 
-      if (actualStatus >= 400) {
+      if (actualStatus >= 400 && actualStatus !== 429) {
         if ((actualStatus === 401 || actualStatus === 403) && isAuthRelated(name, afterExecs)) {
-          return {
+          addFinding({
             category: 'auth_failure',
             severity: failureSeverity(afterExecs),
             detail: `Request that previously succeeded now returns ${actualStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.`
-          };
+          });
+        } else {
+          addFinding({
+            category: 'endpoint_down',
+            severity: failureSeverity(afterExecs),
+            detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${actualStatus}. Endpoint or upstream dependency likely broken.`
+          });
         }
-
-        return {
-          category: 'endpoint_down',
-          severity: failureSeverity(afterExecs),
-          detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${actualStatus}. Endpoint or upstream dependency likely broken.`
-        };
       }
     }
     const schemaRelated = failedAssertions.some(isSchemaAssertion);
+    const hasStatusFinding = findings.some((finding) =>
+      finding.category === 'auth_failure' || finding.category === 'endpoint_down'
+    );
+    const hasRateLimitFinding = findings.some((finding) =>
+      finding.category === 'rate_limit_regression'
+    );
+    const hasStatusAssertionFailure = failedAssertions.some(isStatusCodeAssertion);
+    const hasResponseTimeAssertionFailure = failedAssertions.some(isResponseTimeAssertion);
 
-    if (schemaRelated) {
-      return {
+    if (schemaRelated && !(hasStatusFinding && hasStatusAssertionFailure)) {
+      addFinding({
         category: 'schema_change',
         severity: failureSeverity(afterExecs),
         detail: `Response status is unchanged, but a field/shape assertion now fails: "${failedAssertions[0].errorMessage}". Likely a response schema change (renamed/removed field).${intermittencyDetail}`
-      };
+      });
     }
 
-    if (!multiValueStatusFailure) {
-      return {
+    if (!multiValueStatusFailure && !schemaRelated &&
+      !(hasStatusFinding && hasStatusAssertionFailure) &&
+      !(hasRateLimitFinding && hasResponseTimeAssertionFailure)) {
+      addFinding({
         category: 'logic_bug',
         severity: 'high',
       detail: `Response status is unchanged (still 200), but a business-logic assertion now fails: "${failedAssertions[0].errorMessage}". Silent correctness regression — no error code, so this would be missed by status-code-only monitoring.`
-      };
+      });
     }
   }
 
-  return {
-    category: 'unknown',
-    severity: 'medium',
-    detail: 'Behavior changed but did not match a known failure pattern. Needs manual review.'
-  };
+  if (!findings.length) {
+    addFinding({
+      category: 'unknown',
+      severity: 'medium',
+      detail: 'Behavior changed but did not match a known failure pattern. Needs manual review.'
+    });
+  }
+
+  return findings;
 }
 
 function main() {
@@ -334,9 +366,9 @@ function main() {
   for (const [key, afterList] of afterExecs.entries()) {
     const name = afterList[0].name;
     const beforeList = beforeExecs.get(key) || [];
-    const classification = classify(name, beforeList, afterList);
-    if (classification) {
-      results.push({ name, ...classification });
+    const findings = classify(name, beforeList, afterList);
+    for (const finding of findings) {
+      results.push({ name, ...finding });
     }
   }
 
