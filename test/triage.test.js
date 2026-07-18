@@ -8,8 +8,13 @@ const test = require('node:test');
 
 const { classify, groupByName } = require('../src/triage');
 
-function execution(statusCode, assertions = [{ passed: true }]) {
-  return { statusCode, responseTime: 10, assertions };
+function execution(statusCode, assertions = [{ passed: true }], options = {}) {
+  return {
+    statusCode,
+    responseTime: options.responseTime ?? 10,
+    responseBody: options.responseBody ?? null,
+    assertions
+  };
 }
 
 test('classifies a missing response after a healthy baseline as endpoint_down', () => {
@@ -38,7 +43,58 @@ test('prefers endpoint_down over flaky for an intermittent failure after a healt
   );
 
   assert.equal(result.category, 'endpoint_down');
+  assert.equal(result.severity, 'medium');
   assert.match(result.detail, /intermittent/i);
+});
+
+test('keeps a complete endpoint outage at high severity', () => {
+  const result = classify('Get Orders', [execution(200)], [execution(500)]);
+
+  assert.equal(result.category, 'endpoint_down');
+  assert.equal(result.severity, 'high');
+});
+
+test('downgrades partial schema failures and rate-limit regressions below 3x', () => {
+  const schemaResult = classify(
+    'Get Orders',
+    [execution(200), execution(200)],
+    [
+      execution(200, [{ passed: false, name: 'Response schema', errorMessage: 'missing field' }]),
+      execution(200)
+    ]
+  );
+  const rateLimitResult = classify(
+    'Get Orders',
+    [execution(200, undefined, { responseTime: 100 })],
+    [execution(200, undefined, { responseTime: 220 })]
+  );
+
+  assert.equal(schemaResult.category, 'schema_change');
+  assert.equal(schemaResult.severity, 'medium');
+  assert.equal(rateLimitResult.category, 'rate_limit_regression');
+  assert.equal(rateLimitResult.severity, 'medium');
+});
+
+test('keeps a 3x rate-limit response-time regression at high severity', () => {
+  const result = classify(
+    'Get Orders',
+    [execution(200, undefined, { responseTime: 100 })],
+    [execution(200, undefined, { responseTime: 300 })]
+  );
+
+  assert.equal(result.category, 'rate_limit_regression');
+  assert.equal(result.severity, 'high');
+});
+
+test('uses a failed response body as an additional auth signal', () => {
+  const result = classify(
+    'Protected resource',
+    [execution(200)],
+    [execution(401, undefined, { responseBody: '{"error":"unauthorized session"}' })]
+  );
+
+  assert.equal(result.category, 'auth_failure');
+  assert.equal(result.severity, 'high');
 });
 
 test('groups duplicate request names by Newman item ID when available', () => {

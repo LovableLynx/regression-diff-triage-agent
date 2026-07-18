@@ -26,6 +26,15 @@
 
 const fs = require('fs');
 
+function responseBody(response) {
+  if (!response) return null;
+  if (typeof response.body === 'string') return response.body;
+  if (response.stream && Array.isArray(response.stream.data)) {
+    return Buffer.from(response.stream.data).toString('utf8');
+  }
+  return null;
+}
+
 function loadReport(filePath) {
   try {
     const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -38,6 +47,7 @@ function loadReport(filePath) {
       name: exec.item.name,
       statusCode: exec.response ? exec.response.code : null,
       responseTime: exec.response ? exec.response.responseTime : null,
+      responseBody: responseBody(exec.response),
       assertions: (exec.assertions || []).map((a) => ({
         name: a.assertion,
         passed: !a.error,
@@ -68,10 +78,16 @@ function sharedItemIds(beforeReport, afterReport) {
     .filter((id) => id && beforeIds.has(id)));
 }
 
-function isAuthRelated(name) {
-  return /login|auth|token|credential/i.test(name);
+// This is a heuristic tradeoff: collection naming varies, so names alone
+// cannot reliably identify auth flows. Failed response bodies add a signal.
+function isAuthRelated(name, executions = []) {
+  return /login|auth|token|credential/i.test(name) ||
+    executions.some((exec) => executionFailed(exec) &&
+      /token|credential|unauthorized|session/i.test(exec.responseBody || ''));
 }
 
+// This is a heuristic tradeoff: assertion text is not a formal schema
+// contract and naming conventions vary across collections.
 function isSchemaAssertion(assertion) {
   return /property|field|shape|schema/i.test(assertion.name || '') ||
     /property|field|shape|schema/i.test(assertion.errorMessage || '');
@@ -100,6 +116,16 @@ function isHttpStatusCode(status) {
 
 const MIN_RESPONSE_TIME_INCREASE_MS = 100;
 const RESPONSE_TIME_MULTIPLIER = 2;
+const SEVERE_RESPONSE_TIME_MULTIPLIER = 3;
+
+function executionFailed(execution) {
+  return execution.statusCode === null || execution.statusCode === undefined ||
+    execution.statusCode >= 400 || (execution.assertions || []).some((assertion) => !assertion.passed);
+}
+
+function failureSeverity(afterExecs) {
+  return afterExecs.every(executionFailed) ? 'high' : 'medium';
+}
 
 function averageResponseTime(executions) {
   const responseTimes = executions
@@ -117,6 +143,14 @@ function hasSignificantResponseTimeIncrease(beforeExecs, afterExecs) {
   return beforeAverage !== null && afterAverage !== null &&
     afterAverage >= beforeAverage * RESPONSE_TIME_MULTIPLIER &&
     afterAverage - beforeAverage >= MIN_RESPONSE_TIME_INCREASE_MS;
+}
+
+function hasSevereResponseTimeIncrease(beforeExecs, afterExecs) {
+  const beforeAverage = averageResponseTime(beforeExecs);
+  const afterAverage = averageResponseTime(afterExecs);
+
+  return beforeAverage !== null && afterAverage !== null &&
+    afterAverage >= beforeAverage * SEVERE_RESPONSE_TIME_MULTIPLIER;
 }
 
 function classify(name, beforeExecs, afterExecs) {
@@ -147,15 +181,19 @@ function classify(name, beforeExecs, afterExecs) {
   const wasHealthy = [...beforeStatuses].every((s) => Number.isFinite(s) && s < 400);
   const nowUnhealthy = afterStatuses.some((s) => s === null || s === undefined || s >= 400);
   const resultsAreIntermittent = afterExecs.length > 1 && uniqueAfterStatuses.size > 1;
+  const failedExecutionCount = afterExecs.filter(executionFailed).length;
+  const allAfterExecutionsFailed = failedExecutionCount === afterExecs.length;
   const intermittencyDetail = resultsAreIntermittent
     ? ` Results are intermittent: statuses seen = [${[...uniqueAfterStatuses].join(', ')}].`
-    : '';
+    : !allAfterExecutionsFailed
+      ? ` Results are intermittent: ${failedExecutionCount} of ${afterExecs.length} executions failed.`
+      : '';
 
   if (wasHealthy && afterHasNoResponse) {
     return {
       category: 'endpoint_down',
-      severity: 'high',
-      detail: `Request that previously returned ${[...beforeStatuses].join('/')} had no response received. Endpoint, network, or upstream dependency may be unavailable.`
+      severity: failureSeverity(afterExecs),
+      detail: `Request that previously returned ${[...beforeStatuses].join('/')} had no response received. Endpoint, network, or upstream dependency may be unavailable.${intermittencyDetail}`
     };
   }
 
@@ -168,30 +206,30 @@ function classify(name, beforeExecs, afterExecs) {
     if (afterStatuses.includes(429)) {
       return {
         category: 'rate_limit_regression',
-        severity: 'high',
+        severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
         detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
       };
     }
 
     return {
       category: 'rate_limit_regression',
-      severity: 'high',
+      severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
       detail: `Request remains successful but average response time increased from ${Math.round(beforeAverage)}ms to ${Math.round(afterAverage)}ms (at least ${RESPONSE_TIME_MULTIPLIER}x and ${MIN_RESPONSE_TIME_INCREASE_MS}ms slower). Likely throttling or a performance regression.`
     };
   }
 
   if (wasHealthy && nowUnhealthy) {
     const badStatus = afterStatuses.find((s) => s === null || s === undefined || s >= 400);
-    if ((badStatus === 401 || badStatus === 403) && isAuthRelated(name)) {
+    if ((badStatus === 401 || badStatus === 403) && isAuthRelated(name, afterExecs)) {
       return {
         category: 'auth_failure',
-        severity: 'high',
+        severity: failureSeverity(afterExecs),
         detail: `Request that previously succeeded now returns ${badStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.${intermittencyDetail}`
       };
     }
     return {
       category: 'endpoint_down',
-      severity: 'high',
+      severity: failureSeverity(afterExecs),
       detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${badStatus}. Endpoint or upstream dependency likely broken.${intermittencyDetail}`
     };
   }
@@ -223,23 +261,23 @@ function classify(name, beforeExecs, afterExecs) {
       if (actualStatus === 429) {
         return {
           category: 'rate_limit_regression',
-          severity: 'high',
+          severity: hasSevereResponseTimeIncrease(beforeExecs, afterExecs) ? 'high' : 'medium',
           detail: 'Request that previously succeeded now returns 429 (Too Many Requests). Likely a rate-limit or throttling regression.'
         };
       }
 
       if (actualStatus >= 400) {
-        if ((actualStatus === 401 || actualStatus === 403) && isAuthRelated(name)) {
+        if ((actualStatus === 401 || actualStatus === 403) && isAuthRelated(name, afterExecs)) {
           return {
             category: 'auth_failure',
-            severity: 'high',
+            severity: failureSeverity(afterExecs),
             detail: `Request that previously succeeded now returns ${actualStatus} on an auth-related endpoint. Likely a credential, token, or permission regression.`
           };
         }
 
         return {
           category: 'endpoint_down',
-          severity: 'high',
+          severity: failureSeverity(afterExecs),
           detail: `Request that previously returned ${[...beforeStatuses].join('/')} now returns ${actualStatus}. Endpoint or upstream dependency likely broken.`
         };
       }
@@ -249,8 +287,8 @@ function classify(name, beforeExecs, afterExecs) {
     if (schemaRelated) {
       return {
         category: 'schema_change',
-        severity: 'high',
-        detail: `Response status is unchanged, but a field/shape assertion now fails: "${failedAssertions[0].errorMessage}". Likely a response schema change (renamed/removed field).`
+        severity: failureSeverity(afterExecs),
+        detail: `Response status is unchanged, but a field/shape assertion now fails: "${failedAssertions[0].errorMessage}". Likely a response schema change (renamed/removed field).${intermittencyDetail}`
       };
     }
 
