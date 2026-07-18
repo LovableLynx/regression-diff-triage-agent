@@ -16,6 +16,8 @@ This is a real, recurring cost in QA work, not a hypothetical. It's the kind of 
 
 ## What it does
 
+**Important caveat up front:** classification quality for `logic_bug` and `schema_change` depends entirely on how good the `pm.test()` assertions in your source collection are. Vague or missing assertions mean vague or missing triage, this tool diffs what your tests actually check, it doesn't infer correctness on its own. See "Using your own Newman data" below for what makes a collection well-suited to this.
+
 Feed it two Newman (Postman CLI) JSON test reports, a "before" run and an "after" run against the same collection, and it diffs the outcomes per request, then classifies each broken test into one of six root-cause categories:
 
 | Category | What it means |
@@ -27,17 +29,23 @@ Feed it two Newman (Postman CLI) JSON test reports, a "before" run and an "after
 | `flaky` | The same request gives inconsistent results across repeated calls |
 | `logic_bug` | Status is unchanged (still 200), but a business-logic assertion fails. A silent correctness regression that status-code monitoring alone would miss |
 
+`flaky` detection requires the collection itself to call the same request more than once (the classifier compares outcomes across repeated calls of the same request within one run). If your collection only calls each request once, flakiness within a single run can't be detected, only true before/after regressions can. The bundled demo collection deliberately repeats one request three times to exercise this.
+
 Output is a prioritized, human-readable report grouped by category and severity, turning "read 50 failure logs" into "read one triage summary."
 
 ## How Codex was used
 
-This project's classification engine (`src/triage.js`) was built collaboratively with me and extended using **Codex CLI running GPT-5.6**. Codex was used to:
+This project's classification engine (`src/triage.js`) is a **rule-based diff classifier**, not an LLM-inference system, it compares Newman JSON reports using explicit heuristics (status codes, response times, assertion text patterns). Codex, running GPT-5.6, was used throughout development to extend and harden this rules engine. Specifically, Codex:
 
-- Add the sixth failure category (`rate_limit_regression`) to the existing classifier, following the established pattern (category/severity/detail return shape) without touching the five categories already in place.
-- Add a corresponding mock API endpoint (`GET /books/:id/reviews`) and Postman assertion to demonstrate the new category end-to-end.
-- Independently verify its own change: running the full Newman before/after cycle, confirming all 6 categories classified correctly, and confirming the original 5 categories were untouched, before handing control back.
+- Added the sixth failure category (`rate_limit_regression`), following the established pattern (category/severity/detail return shape) without touching the categories already in place.
+- Added a corresponding mock API endpoint (`GET /books/:id/reviews`) and Postman assertion to demonstrate the new category end-to-end.
+- Hardened the classifier against real bugs found during independent testing against messy, real-world Newman data: null/missing response handling, vacuous-truth on unbaselined new tests, unhandled malformed JSON, a classification-ordering bug that mislabeled genuine regressions as merely "flaky," and a name-collision bug in how requests were matched between runs.
+- Made the severity model signal-based (how many executions failed, how severe a slowdown was) instead of hardcoded, and added a secondary auth-detection signal from response body content in addition to test names.
+- Added a `test/triage.test.js` unit test suite (10 tests) covering these behaviors.
+- Built the `triage:run` interactive command, letting anyone point the tool at their own Postman collection and environment file, without touching the demo fixtures.
+- Independently verified every change: running the full Newman before/after cycle after each fix, confirming existing categories stayed correct, and I re-verified each result myself in a separate terminal before committing.
 
-The `git` history in this repo shows the `before codex` checkpoint commit and the subsequent Codex-driven commit as two distinct points, so the diff is inspectable.
+The `git` history in this repo shows the `before codex` checkpoint commit and each subsequent Codex-driven commit as distinct points, so every change is inspectable.
 
 ## Setup
 
@@ -69,25 +77,30 @@ npx newman run collections/bookstore.postman_collection.json -e collections/env.
 node src/triage.js fixtures/before.json fixtures/after.json
 ```
 
-You should see a report with 6 findings: one each of `auth_failure`, `schema_change`, `endpoint_down`, `rate_limit_regression`, `logic_bug`, and `flaky`.
+You should see a report with 6 findings across 5 categories: `auth_failure`, `schema_change`, `endpoint_down` (2, one complete outage and one intermittent), `rate_limit_regression`, and `logic_bug`. Severity is signal-based: a full outage is HIGH, an intermittent one is MEDIUM.
 
-## Capture and triage your own collection
+## Recent improvements
 
-The convenience runner captures a temporary before report, pauses for your code change, captures the after report, and runs the existing triage command. It never writes to `fixtures/`.
+This classifier went through three rounds of independent review and hardening after the initial build:
 
-```bash
-npm run triage:run -- ./collections/my-api.postman_collection.json ./collections/my-api.postman_environment.json
-```
-
-After the before snapshot, make and deploy your change, then press Enter. The temporary reports are removed after the triage report is printed. Newman must be installed (`npm install` installs this project's local copy).
+- Null/missing responses (network failures, timeouts) are now correctly flagged instead of silently passing as healthy.
+- A test with no baseline in the "before" run is now labeled `new_test_no_baseline` instead of being misreported as a regression.
+- Bad file paths or malformed Newman JSON now produce a clear CLI error instead of a raw stack trace.
+- A request that goes from consistently healthy to a genuine failure now prioritizes the real root cause (e.g. `endpoint_down`) over a generic "flaky" label, while still noting when results were intermittent.
+- Requests are matched between runs using Newman's stable item ID when available, so collections with duplicate request names classify correctly.
+- Severity now reflects actual signal (how many executions failed, how severe a slowdown was) instead of being hardcoded to "high" everywhere.
+- Auth-failure detection now also checks the failed response body for auth-related terms, not just the test name, which is documented as a known heuristic tradeoff in the code.
+- Added a test suite (`npm test`) covering these behaviors.
 
 ## Project structure
 
 ```
-mock-api/          Mock "Bookstore" REST API + failure-injection script
-collections/       Postman collection + environment used to exercise the API
-src/triage.js       The classification engine, the core of the project
-fixtures/           Sample before/after Newman JSON reports
+mock-api/            Mock "Bookstore" REST API + failure-injection script
+collections/         Postman collection + environment used to exercise the API
+src/triage.js        The classification engine, the core of the project
+src/run-triage.js     Interactive runner for testing your own Postman collection end to end
+fixtures/             Sample before/after Newman JSON reports (demo data only, not overwritten by src/run-triage.js)
+test/triage.test.js   Unit tests for the classifier (run with `npm test`)
 ```
 
 ## Using your own Newman data
