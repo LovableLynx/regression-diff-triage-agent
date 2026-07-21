@@ -1,4 +1,4 @@
-# Regression Diff Triage Agent
+# Regend (Regression Diff Triage Agent)
 
 A CLI tool that diagnoses **why** API regression tests broke. Not just that they broke.
 
@@ -30,6 +30,8 @@ Feed it two Newman (Postman CLI) JSON test reports, a "before" run and an "after
 | `logic_bug` | Status is unchanged (still 200), but a business-logic assertion fails. A silent correctness regression that status-code monitoring alone would miss |
 
 `flaky` detection requires the collection itself to call the same request more than once (the classifier compares outcomes across repeated calls of the same request within one run). If your collection only calls each request once, flakiness within a single run can't be detected, only true before/after regressions can. The bundled demo collection deliberately repeats one request three times to exercise this.
+
+The classifier reports one primary root cause per request, by design. If a request has multiple simultaneous issues (e.g. it's both rate-limited and has a schema change), only the higher-precedence category is shown. Fixing that issue and re-running the tool may surface the next one. This keeps the report simple and prioritized, but means a single "clean" run doesn't guarantee a request has only one problem.
 
 Output is a prioritized, human-readable report grouped by category and severity, turning "read 50 failure logs" into "read one triage summary."
 
@@ -86,7 +88,7 @@ This classifier went through three rounds of independent review and hardening af
 - Null/missing responses (network failures, timeouts) are now correctly flagged instead of silently passing as healthy.
 - A test with no baseline in the "before" run is now labeled `new_test_no_baseline` instead of being misreported as a regression.
 - Bad file paths or malformed Newman JSON now produce a clear CLI error instead of a raw stack trace.
-- A request can produce multiple findings when independent signals regress together (for example, a rate-limit/performance regression and a schema assertion failure). The report lists each applicable category rather than forcing a single primary root cause.
+- A request that goes from consistently healthy to a genuine failure now prioritizes the real root cause (e.g. `endpoint_down`) over a generic "flaky" label, while still noting when results were intermittent.
 - Requests are matched between runs using Newman's stable item ID when available, so collections with duplicate request names classify correctly.
 - Severity now reflects actual signal (how many executions failed, how severe a slowdown was) instead of being hardcoded to "high" everywhere.
 - Auth-failure detection now also checks the failed response body for auth-related terms, not just the test name, which is documented as a known heuristic tradeoff in the code.
